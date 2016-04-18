@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
-#include <aREST.h>
-#include <ESP8266mDNS.h>
 #include <PubSubClient.h>
+#include <aREST.h>
+//#include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -13,16 +13,18 @@
 #define temperature_topic "garage/temperature"
 #define door_trigger_topic "garage/door_triggered"
 
+
+#define DEBUG_MODE 1
 #define LISTEN_PORT 80
 
 OneWire ds(D6);
 DallasTemperature DS18B20(&ds);
 
-aREST rest = aREST();
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 //WiFiServer TelnetServer(8266);
+aREST rest = aREST(client,mqtt_server);
 WiFiServer RESTServer(LISTEN_PORT);
 
 //Variables to expose to the API
@@ -41,6 +43,9 @@ static int UP_SENSE_PIN = D1;
 static int DN_SENSE_PIN = D2;
 static int DOOR_TRIG_PIN = D7;
 
+static float temp_delta_trigger = 0.5;
+static long forced_reporting_interval = 60000;
+
 int up_value;
 int dn_value;
 int is_up;
@@ -48,13 +53,14 @@ int loop_status = -2;
 int entry_state;
 
 
-
+long lastForcedReport = 0;
 long lastMsg = 0;
 long lastTempMsg = 0;
 String currentState = "Indeterminate";
 bool newState = false;
 int motion_direction = 0;
 
+float previousTemperatureC;
 float currentTemperatureC;
 
 
@@ -115,7 +121,7 @@ void pubMQTT(String topic, String topic_val){
 }
 
 float getTemperature() {
-  Serial.println("Requesting DS18B20 temperature...");
+  //Serial.println("Requesting DS18B20 temperature...");
   float temp;
   do {
     DS18B20.requestTemperatures();
@@ -173,13 +179,14 @@ void setup() {
   rest.set_id("1");
   rest.set_name("esp8266");
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  //client.setServer(mqtt_server, 1883);
   pinMode(UP_IND_PIN, OUTPUT);
   pinMode(DN_IND_PIN, OUTPUT);
   pinMode(DOOR_TRIG_PIN, OUTPUT);
   digitalWrite(DOOR_TRIG_PIN,LOW);
   pinMode(UP_SENSE_PIN, INPUT_PULLUP);
   pinMode(DN_SENSE_PIN, INPUT_PULLUP);
+  previousTemperatureC = 4000.0;
 
   // ArduinoOTA.onStart([]() {
   //   Serial.println("OTA Start");
@@ -207,21 +214,31 @@ void setup() {
 
 
 void loop(){
-  if(!client.connected()){
-    reconnect();
-  }
+  // if(!client.connected()){
+  //   reconnect();
+  // }
   WiFiClient rest_client = RESTServer.available();
+  // if(!rest_client){
+  //   return;
+  // }
+  // while(!rest_client.available()){
+  //   delay(1);
+  // }
   //ArduinoOTA.handle();
-  client.loop();
+  //client.loop();
+  rest.loop(client);
   rest.handle(rest_client);
   newState = setStatus();
   motion_direction = is_up - entry_state;
   long now = millis();
-  if(now - lastTempMsg > 10000){
+  if(now - lastTempMsg > 2000){
     currentTemperatureC = getTemperature();
-    pubMQTT(temperature_topic, String(currentTemperatureC));
     lastTempMsg = now;
-    Serial.println(WiFi.localIP());
+  }
+  if(abs(previousTemperatureC - currentTemperatureC) > temp_delta_trigger || now - lastForcedReport > 60000){
+    pubMQTT(temperature_topic, String(currentTemperatureC));
+    previousTemperatureC = currentTemperatureC;
+    lastForcedReport = now;
   }
   if(newState && now - lastMsg > 200){
     entry_state = is_up;
