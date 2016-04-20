@@ -6,8 +6,8 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 // #include <ArduinoOTA.h>
-#define wifi_ssid "HomeWiFi"
-#define wifi_password "navi3com"
+#define wifi_ssid "*********"
+#define wifi_password "********"
 #define mqtt_server "192.168.1.7"
 #define status_topic "garage/status"
 #define temperature_topic "garage/temperature"
