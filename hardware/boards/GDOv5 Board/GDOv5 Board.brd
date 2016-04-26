@@ -156,6 +156,8 @@ GRN</text>
 <text x="15.875" y="73.66" size="1.27" layer="26" font="vector" rot="MR0" align="top-center">ESP8266
 Garage Door Monitor
 April 2016 KJA</text>
+<dimension x1="0" y1="80" x2="0" y2="1.27" x3="-8.89" y3="40.635" textsize="1.27" layer="25" unit="inch" visible="yes"/>
+<dimension x1="0" y1="80" x2="33.96" y2="80" x3="16.98" y3="86.36" textsize="1.27" layer="25" unit="inch" visible="yes"/>
 </plain>
 <libraries>
 <library name="resistor">
