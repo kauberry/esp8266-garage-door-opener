@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.5.0">
+<eagle version="7.4.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -15995,8 +15995,6 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <part name="C1" library="resistor" deviceset="C-EU" device="C1206" value="100pF"/>
 <part name="C2" library="resistor" deviceset="C-EU" device="C1206" value="100pF"/>
 <part name="C3" library="rcl" deviceset="CPOL-EU" device="CT3216" value="1uF"/>
-<part name="GND5" library="supply1" deviceset="GND" device=""/>
-<part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="GND7" library="supply1" deviceset="GND" device=""/>
 <part name="R1" library="resistor" deviceset="R-EU_" device="M3216" value="4.7K"/>
 <part name="C4" library="resistor" deviceset="C-EU" device="C1206" value="10uF"/>
@@ -16021,6 +16019,10 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <part name="R8" library="resistor" deviceset="R-EU_" device="M3216" value="250"/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
+<part name="R9" library="resistor" deviceset="R-EU_" device="M3216" value="50"/>
+<part name="GND5" library="supply1" deviceset="GND" device=""/>
+<part name="R10" library="resistor" deviceset="R-EU_" device="M3216" value="50"/>
+<part name="GND13" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -16033,7 +16035,7 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <instance part="DOOR_TRIGGER" gate="1" x="149.86" y="43.18"/>
 <instance part="J1" gate="G$1" x="-12.7" y="111.76"/>
 <instance part="CTRL_OUT" gate="A" x="93.98" y="40.64"/>
-<instance part="CTRL_OUT" gate="B" x="93.98" y="20.32"/>
+<instance part="CTRL_OUT" gate="B" x="93.98" y="15.24"/>
 <instance part="IC1" gate="G$1" x="-2.54" y="83.82"/>
 <instance part="IC2" gate="G$1" x="-5.08" y="53.34"/>
 <instance part="GND1" gate="1" x="0" y="101.6"/>
@@ -16041,11 +16043,15 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <instance part="GND2" gate="1" x="-5.08" y="33.02"/>
 <instance part="GND3" gate="1" x="127" y="55.88"/>
 <instance part="GND4" gate="1" x="127" y="83.82"/>
-<instance part="C1" gate="G$1" x="127" y="71.12"/>
-<instance part="C2" gate="G$1" x="127" y="96.52"/>
-<instance part="C3" gate="G$1" x="116.84" y="22.86" rot="R270"/>
-<instance part="GND5" gate="1" x="76.2" y="33.02"/>
-<instance part="GND6" gate="1" x="76.2" y="12.7"/>
+<instance part="C1" gate="G$1" x="127" y="71.12" smashed="yes">
+<attribute name="NAME" x="128.524" y="71.501" size="1.778" layer="95"/>
+<attribute name="VALUE" x="129.794" y="69.215" size="1.27" layer="96"/>
+</instance>
+<instance part="C2" gate="G$1" x="127" y="96.52" smashed="yes">
+<attribute name="NAME" x="128.524" y="96.901" size="1.778" layer="95"/>
+<attribute name="VALUE" x="129.54" y="94.615" size="1.27" layer="96"/>
+</instance>
+<instance part="C3" gate="G$1" x="116.84" y="17.78" rot="R270"/>
 <instance part="GND7" gate="1" x="96.52" y="73.66"/>
 <instance part="R1" gate="G$1" x="-2.54" y="93.98"/>
 <instance part="C4" gate="G$1" x="50.8" y="76.2"/>
@@ -16070,6 +16076,10 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <instance part="R8" gate="G$1" x="147.32" y="2.54"/>
 <instance part="GND10" gate="1" x="157.48" y="-7.62"/>
 <instance part="GND12" gate="1" x="-2.54" y="71.12"/>
+<instance part="R9" gate="G$1" x="76.2" y="30.48" rot="R90"/>
+<instance part="GND5" gate="1" x="76.2" y="22.86"/>
+<instance part="R10" gate="G$1" x="76.2" y="5.08" rot="R90"/>
+<instance part="GND13" gate="1" x="76.2" y="-2.54"/>
 </instances>
 <busses>
 </busses>
@@ -16103,18 +16113,6 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <pinref part="C2" gate="G$1" pin="2"/>
 <wire x1="127" y1="91.44" x2="127" y2="88.9" width="0.1524" layer="91"/>
 <junction x="127" y="88.9"/>
-</segment>
-<segment>
-<pinref part="CTRL_OUT" gate="A" pin="C"/>
-<wire x1="83.82" y1="38.1" x2="76.2" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="38.1" x2="76.2" y2="35.56" width="0.1524" layer="91"/>
-<pinref part="GND5" gate="1" pin="GND"/>
-</segment>
-<segment>
-<pinref part="CTRL_OUT" gate="B" pin="C"/>
-<wire x1="83.82" y1="17.78" x2="76.2" y2="17.78" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="17.78" x2="76.2" y2="15.24" width="0.1524" layer="91"/>
-<pinref part="GND6" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GND"/>
@@ -16151,6 +16149,14 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <pinref part="GND12" gate="1" pin="GND"/>
 <wire x1="-2.54" y1="73.66" x2="-2.54" y2="71.12" width="0.1524" layer="91"/>
 <junction x="-2.54" y="73.66"/>
+</segment>
+<segment>
+<pinref part="R9" gate="G$1" pin="1"/>
+<pinref part="GND5" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="R10" gate="G$1" pin="1"/>
+<pinref part="GND13" gate="1" pin="GND"/>
 </segment>
 </net>
 <net name="+5V" class="0">
@@ -16281,8 +16287,8 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 </segment>
 <segment>
 <pinref part="CTRL_OUT" gate="B" pin="EMIT"/>
-<wire x1="101.6" y1="17.78" x2="106.68" y2="17.78" width="0.1524" layer="91"/>
-<label x="104.14" y="17.78" size="1.27" layer="95"/>
+<wire x1="101.6" y1="12.7" x2="106.68" y2="12.7" width="0.1524" layer="91"/>
+<label x="104.14" y="12.7" size="1.27" layer="95"/>
 </segment>
 <segment>
 <pinref part="DOOR_TRIGGER" gate="1" pin="1"/>
@@ -16293,15 +16299,15 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <net name="N$3" class="0">
 <segment>
 <pinref part="CTRL_OUT" gate="B" pin="COL"/>
-<wire x1="101.6" y1="22.86" x2="111.76" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="17.78" x2="111.76" y2="17.78" width="0.1524" layer="91"/>
 <pinref part="C3" gate="G$1" pin="-"/>
 </segment>
 </net>
 <net name="LIGHTS+" class="0">
 <segment>
 <pinref part="C3" gate="G$1" pin="+"/>
-<wire x1="119.38" y1="22.86" x2="124.46" y2="22.86" width="0.1524" layer="91"/>
-<label x="121.92" y="22.86" size="1.27" layer="95"/>
+<wire x1="119.38" y1="17.78" x2="124.46" y2="17.78" width="0.1524" layer="91"/>
+<label x="121.92" y="17.78" size="1.27" layer="95"/>
 </segment>
 <segment>
 <pinref part="DOOR_TRIGGER" gate="1" pin="5"/>
@@ -16312,8 +16318,8 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <net name="ARD12" class="0">
 <segment>
 <pinref part="CTRL_OUT" gate="B" pin="A"/>
-<wire x1="83.82" y1="22.86" x2="76.2" y2="22.86" width="0.1524" layer="91"/>
-<label x="76.2" y="22.86" size="1.27" layer="95"/>
+<wire x1="83.82" y1="17.78" x2="76.2" y2="17.78" width="0.1524" layer="91"/>
+<label x="76.2" y="17.78" size="1.27" layer="95"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GPIO12"/>
@@ -16509,6 +16515,22 @@ diameter 5 mm, horizontal, grid 15.24 mm</description>
 <pinref part="U$1" gate="G$1" pin="GPIO16"/>
 <wire x1="58.42" y1="91.44" x2="53.34" y2="91.44" width="0.1524" layer="91"/>
 <label x="50.8" y="91.44" size="1.27" layer="95"/>
+</segment>
+</net>
+<net name="N$6" class="0">
+<segment>
+<pinref part="CTRL_OUT" gate="A" pin="C"/>
+<wire x1="83.82" y1="38.1" x2="76.2" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="38.1" x2="76.2" y2="35.56" width="0.1524" layer="91"/>
+<pinref part="R9" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$7" class="0">
+<segment>
+<pinref part="CTRL_OUT" gate="B" pin="C"/>
+<wire x1="83.82" y1="12.7" x2="76.2" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="12.7" x2="76.2" y2="10.16" width="0.1524" layer="91"/>
+<pinref part="R10" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
