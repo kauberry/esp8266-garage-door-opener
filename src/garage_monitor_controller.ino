@@ -1,47 +1,67 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include <aREST.h>
-//#include <ESP8266mDNS.h>
-#include <WiFiUdp.h>
+#include <ESP8266mDNS.h>
+// #include <WiFiUdp.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <EEPROM.h>
+#include <string.h>
 // #include <ArduinoOTA.h>
 #define wifi_ssid "*********"
 #define wifi_password "********"
+#define my_id 1
 #define mqtt_server "192.168.1.7"
-#define status_topic "garage/status"
-#define temperature_topic "garage/temperature"
-#define door_trigger_topic "garage/door_triggered"
+
 
 
 #define DEBUG_MODE 1
 #define LISTEN_PORT 80
 
-OneWire ds(D6);
+static int TEMP_PORT = 2; //D6
+static int UP_IND_PIN = 14;//D0;
+static int DN_IND_PIN = 15;
+
+static int UP_SENSE_PIN = 5;//D1;
+static int DN_SENSE_PIN = 4;//D2;
+static int DOOR_TRIG_PIN = 13;//D7;
+static int LIGHT_TRIG_PIN = 12;
+// static int ACTIVITY_LED = 16;
+
+
+String status_topic = "status";
+String temperature_topic = "temperature";
+
+String door_control_topic = "door_trigger";
+String light_control_topic = "light_trigger";
+String status_request_topic = "status";
+String temp_request_topic = "temperature";
+
+String out_topic_prefix = "garage/out/";
+String in_topic_prefix = "garage/in/";
+
+String status_out_topic;
+String temperature_out_topic;
+String door_triggered_out_topic;
+String light_triggered_out_topic;
+String subscription_in_topic;
+
+
+// OneWire ds(D6);
+OneWire ds(TEMP_PORT);
 DallasTemperature DS18B20(&ds);
+
+void callback_handler(char* topic, byte* payload, unsigned int length);
 
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-//WiFiServer TelnetServer(8266);
-aREST rest = aREST(client,mqtt_server);
-WiFiServer RESTServer(LISTEN_PORT);
 
 //Variables to expose to the API
 float temperature;
 String door_status;
+String ssid;
+String password;
 
-//Declare functions to be exposed to the API
-int doorControl(String command);
-
-
-
-static int UP_IND_PIN = D0;
-static int DN_IND_PIN = D5;
-
-static int UP_SENSE_PIN = D1;
-static int DN_SENSE_PIN = D2;
-static int DOOR_TRIG_PIN = D7;
 
 static float temp_delta_trigger = 0.5;
 static long forced_reporting_interval = 60000;
@@ -62,7 +82,7 @@ int motion_direction = 0;
 
 float previousTemperatureC;
 float currentTemperatureC;
-
+int door_trigger();
 
 bool setStatus(){
   up_value = digitalRead(UP_SENSE_PIN);
@@ -81,30 +101,81 @@ bool setStatus(){
 
 void setup_wifi() {
   delay(10);
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(wifi_ssid);
+  if(DEBUG_MODE){
+    Serial.println();
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+  }
   WiFi.mode(WIFI_STA);
-  WiFi.begin(wifi_ssid,wifi_password);
+  WiFi.begin(ssid.c_str(),password.c_str());
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
     Serial.print(".");
   }
+  if(DEBUG_MODE){
+    Serial.println("");
+    Serial.println("WiFi connected");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+  }
 
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback_handler);
 
 
 }
 
+void callback_handler(char* topic, byte* payload, unsigned int length){
+  if(DEBUG_MODE){
+    Serial.print("Message arrived [");
+    Serial.print(topic);
+    Serial.print("] ");
+    for(int i=0;i<length;i++){
+      Serial.print((char)payload[i]);
+    }
+    Serial.println();
+  }
+  char buffer[length+1];
+  strncpy(buffer, (char*)payload,length);
+  buffer[length] = '\0';
+  char * topicToken;
+  topicToken = strtok(topic, "/");
+  topicToken = strtok(NULL, "/");
+  topicToken = strtok(NULL, "/");
+  uint16_t toaddr = strtol(topicToken, NULL, 10);
+  // String newTopic = topicToken;
+  topicToken = strtok(NULL, "/");
+  if(DEBUG_MODE){
+    Serial.print("token: ");
+    Serial.println(topicToken);
+  }
+  topicProcessor(topicToken);
+}
+
+void topicProcessor(String topic){
+  if(topic == door_control_topic){
+    if(DEBUG_MODE) Serial.println("Triggering door controls");
+    door_trigger();
+  }else if (topic == light_control_topic){
+    if(DEBUG_MODE) Serial.println("Triggering door controls");
+    light_trigger();
+  }else if (topic == status_request_topic){
+    if(DEBUG_MODE) Serial.println("Getting Latest Status");
+    get_current_door_state();
+  }else if (topic == temp_request_topic){
+    if(DEBUG_MODE) Serial.println("Getting Current Temperature");
+    temperature_request();
+  }else{
+
+  }
+}
+
 void reconnect(){
   while(!client.connected()){
-    Serial.print("Attempting MQTT Connection...");
-    if(client.connect(mqtt_server)){
+    Serial.print("Attempting MQTT Connection... ");
+    if(client.connect("GarageESPClient")){
       Serial.println("Connected");
+      client.subscribe(subscription_in_topic.c_str());
     }else{
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -115,8 +186,10 @@ void reconnect(){
 }
 
 void pubMQTT(String topic, String topic_val){
-  Serial.print("Newest topic " + topic + " value:");
-  Serial.println(topic_val);
+  if(DEBUG_MODE){
+    Serial.print("Newest topic " + topic + " value:");
+    Serial.println(topic_val);
+  }
   client.publish(topic.c_str(), topic_val.c_str(),true);
 }
 
@@ -142,8 +215,40 @@ void signalStartup(){
   }
 }
 
+int door_trigger(){
+  digitalWrite(DOOR_TRIG_PIN,HIGH);
+  pubMQTT(door_triggered_out_topic, "triggered");
+  delay(1000);
+  digitalWrite(DOOR_TRIG_PIN, LOW);
+}
+
+int light_trigger(){
+  digitalWrite(LIGHT_TRIG_PIN,HIGH);
+  pubMQTT(light_triggered_out_topic, "triggered");
+  delay(1000);
+  digitalWrite(LIGHT_TRIG_PIN, LOW);
+}
+
+int get_current_door_state(){
+  String state = evalIsUp();
+  pubMQTT(status_out_topic, String(state));
+}
+
+int temperature_request(){
+  float myTempC = getTemperature();
+  myTempC = round(myTempC*10.0)/10.0;
+  if(DEBUG_MODE){
+    Serial.print("Reporting Temperature: ");
+    Serial.print(myTempC);
+    Serial.println("deg C");
+  }
+  pubMQTT(temperature_out_topic, String(myTempC));
+
+}
+
+
 String evalIsUp(){
-  String myState = "Indeterminate";
+  String myState = "indeterminate";
   switch(is_up){
     case 1:
       myState = "open";
@@ -166,68 +271,102 @@ String evalIsUp(){
   return myState;
 }
 
+void storeWebCredentials(){
+  //try to read ssid and pw from eeprom first
+  if(readWebCredentials()){
+    setup_wifi();
+  }else{
+    ssid = wifi_ssid;
+    password = wifi_password;
+    Serial.println("Clearing EEPROM");
+    for(int i = 0; i < 96; ++i){
+      EEPROM.write(i,0);
+    }
+    Serial.println(ssid);
+    Serial.println("");
+    Serial.println(password);
+    Serial.println("");
+
+    Serial.println("Writing EEPROM SSID:");
+    for(int i = 0;i < ssid.length(); ++i){
+      EEPROM.write(i, ssid[i]);
+      Serial.print("Wrote: ");
+      Serial.println(ssid[i]);
+    }
+    Serial.println("Writing EEPROM Password");
+    for(int i = 0; i < password.length(); ++i){
+      EEPROM.write(32+i, password[i]);
+      Serial.print("Wrote: ");
+      Serial.println(password[i]);
+    }
+    EEPROM.commit();
+    delay(10);
+    storeWebCredentials();
+  }
+}
+
+bool readWebCredentials(){
+  Serial.println("Reading EEPROM ssid");
+  String esid;
+  for (int i = 0; i < 32; ++i){
+    esid += char(EEPROM.read(i));
+  }
+  if(DEBUG_MODE){
+    Serial.print("SSID: ");
+    Serial.println(esid);
+    Serial.println("Reading EEPROM password");
+  }
+  String epass;
+  for(int i = 32; i < 96; ++i){
+    epass += char(EEPROM.read(i));
+  }
+  if(DEBUG_MODE){
+    Serial.print("Password: ");
+    Serial.println(epass);
+  }
+  if(esid.length() > 1){
+    return true;
+  }
+  return false;
+}
+
 void setup() {
   Serial.begin(115200);
   newState = setStatus();
   entry_state = is_up;
   currentState = evalIsUp();
   currentTemperatureC = getTemperature();
-  rest.variable("temperature",&currentTemperatureC);
-  rest.variable("door_status",&currentState);
 
-  rest.function("door",doorControl);
-  rest.set_id("1");
-  rest.set_name("esp8266");
-  setup_wifi();
-  //client.setServer(mqtt_server, 1883);
+  door_triggered_out_topic = out_topic_prefix + String(my_id) + "/" + door_control_topic;
+  light_triggered_out_topic = out_topic_prefix + String(my_id) + "/" + light_control_topic;
+  temperature_out_topic = out_topic_prefix + String(my_id) + "/" + temp_request_topic;
+  status_out_topic = out_topic_prefix + String(my_id) + "/" + status_request_topic;
+  subscription_in_topic = in_topic_prefix + String(my_id) + "/#";
+
+  storeWebCredentials();
+
   pinMode(UP_IND_PIN, OUTPUT);
+  digitalWrite(UP_IND_PIN,LOW);
   pinMode(DN_IND_PIN, OUTPUT);
+  digitalWrite(DN_IND_PIN,LOW);
   pinMode(DOOR_TRIG_PIN, OUTPUT);
   digitalWrite(DOOR_TRIG_PIN,LOW);
+  pinMode(LIGHT_TRIG_PIN, OUTPUT);
+  digitalWrite(LIGHT_TRIG_PIN,LOW);
+  // pinMode(ACTIVITY_LED,OUTPUT);
+  // digitalWrite(ACTIVITY_LED,LOW);
   pinMode(UP_SENSE_PIN, INPUT_PULLUP);
   pinMode(DN_SENSE_PIN, INPUT_PULLUP);
   previousTemperatureC = 4000.0;
 
-  // ArduinoOTA.onStart([]() {
-  //   Serial.println("OTA Start");
-  // });
-  // ArduinoOTA.onEnd([]() {
-  //   Serial.println("\nEnd");
-  // });
-  //   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-  //   Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  // });
-  // ArduinoOTA.onError([](ota_error_t error) {
-  //   Serial.printf("Error[%u]: ", error);
-  //   if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-  //   else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-  //   else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-  //   else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-  //   else if (error == OTA_END_ERROR) Serial.println("End Failed");
-  // });
-  // ArduinoOTA.setHostname("garage_esp");
-  // TelnetServer.begin();
-  // ArduinoOTA.begin();
-  RESTServer.begin();
   signalStartup();
 }
 
-
+float reportingTemperature;
 void loop(){
-  // if(!client.connected()){
-  //   reconnect();
-  // }
-  WiFiClient rest_client = RESTServer.available();
-  // if(!rest_client){
-  //   return;
-  // }
-  // while(!rest_client.available()){
-  //   delay(1);
-  // }
-  //ArduinoOTA.handle();
-  //client.loop();
-  rest.loop(client);
-  rest.handle(rest_client);
+  if(!client.connected()){
+    reconnect();
+  }
   newState = setStatus();
   motion_direction = is_up - entry_state;
   long now = millis();
@@ -236,7 +375,8 @@ void loop(){
     lastTempMsg = now;
   }
   if(abs(previousTemperatureC - currentTemperatureC) > temp_delta_trigger || now - lastForcedReport > 60000){
-    pubMQTT(temperature_topic, String(currentTemperatureC));
+    reportingTemperature = round(currentTemperatureC*10.0)/10.0;
+    pubMQTT(temperature_out_topic, String(reportingTemperature));
     previousTemperatureC = currentTemperatureC;
     lastForcedReport = now;
   }
@@ -244,17 +384,12 @@ void loop(){
     entry_state = is_up;
     lastMsg = now;
     currentState = evalIsUp();
-    Serial.print("New State => ");
-    Serial.println(currentState);
-    pubMQTT(status_topic,currentState);
+    if(DEBUG_MODE){
+      Serial.print("New State => ");
+      Serial.println(currentState);
+    }
+    // pubMQTT(constructTopic(my_id,status_topic),currentState);
+    pubMQTT(status_out_topic, currentState);
   }
-
-
-}
-
-int doorControl(String command){
-  digitalWrite(DOOR_TRIG_PIN,HIGH);
-  delay(250);
-  digitalWrite(DOOR_TRIG_PIN, LOW);
-  pubMQTT(door_trigger_topic, "triggered");
+  client.loop();
 }
