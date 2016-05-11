@@ -1291,93 +1291,6 @@ Siemens, Hewlett-Packard, Texas Instuments, Sharp, Motorola&lt;p&gt;
 </package>
 </packages>
 </library>
-<library name="con-hirschmann">
-<description>&lt;b&gt;Hirschmann Connectors&lt;/b&gt;&lt;p&gt;
-Audio, scart, microphone, headphone&lt;p&gt;
-&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-<package name="PG203J">
-<description>&lt;b&gt;MIC/HEADPHONE JACK&lt;/b&gt;&lt;p&gt;
-KS-S stereo microphone/headphone jack&lt;p&gt;
- PG203JN (Schukat)</description>
-<wire x1="-7.112" y1="-5.842" x2="-7.112" y2="-3.048" width="0.1524" layer="21"/>
-<wire x1="7.112" y1="5.842" x2="7.112" y2="-5.842" width="0.1524" layer="21"/>
-<wire x1="-7.112" y1="3.048" x2="-10.16" y2="3.048" width="0.1524" layer="21"/>
-<wire x1="-10.16" y1="-3.048" x2="-7.112" y2="-3.048" width="0.1524" layer="21"/>
-<wire x1="-7.112" y1="-3.048" x2="-7.112" y2="3.048" width="0.1524" layer="21"/>
-<wire x1="-7.112" y1="3.048" x2="-7.112" y2="5.842" width="0.1524" layer="21"/>
-<wire x1="-10.16" y1="3.048" x2="-10.668" y2="2.54" width="0.1524" layer="21"/>
-<wire x1="-10.16" y1="-3.048" x2="-10.668" y2="-2.54" width="0.1524" layer="21"/>
-<wire x1="-10.668" y1="-2.54" x2="-10.668" y2="2.54" width="0.1524" layer="21"/>
-<wire x1="-10.16" y1="-3.048" x2="-10.16" y2="3.048" width="0.1524" layer="21"/>
-<wire x1="-7.112" y1="-5.842" x2="-2.794" y2="-5.842" width="0.1524" layer="21"/>
-<wire x1="-2.794" y1="-5.842" x2="-0.635" y2="-5.842" width="0.1524" layer="51"/>
-<wire x1="-0.635" y1="-5.842" x2="7.112" y2="-5.842" width="0.1524" layer="21"/>
-<wire x1="7.112" y1="5.842" x2="3.81" y2="5.842" width="0.1524" layer="21"/>
-<wire x1="3.81" y1="5.842" x2="1.905" y2="5.842" width="0.1524" layer="51"/>
-<wire x1="1.905" y1="5.842" x2="-7.112" y2="5.842" width="0.1524" layer="21"/>
-<wire x1="-6.731" y1="-1.651" x2="-3.048" y2="-1.651" width="0.1524" layer="51"/>
-<wire x1="-3.048" y1="1.651" x2="-6.731" y2="1.651" width="0.1524" layer="51"/>
-<wire x1="-6.731" y1="-1.651" x2="-6.731" y2="1.651" width="0.1524" layer="51"/>
-<wire x1="-1.905" y1="1.397" x2="-1.651" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-1.651" y1="0.889" x2="-1.27" y2="2.032" width="0.1524" layer="51"/>
-<wire x1="-0.254" y1="2.032" x2="-0.254" y2="4.953" width="0.1524" layer="51"/>
-<wire x1="-0.254" y1="4.953" x2="1.524" y2="4.953" width="0.1524" layer="51"/>
-<wire x1="-1.27" y1="2.032" x2="-0.762" y2="2.032" width="0.1524" layer="51"/>
-<wire x1="-0.762" y1="2.032" x2="-0.254" y2="2.032" width="0.1524" layer="51"/>
-<wire x1="-0.762" y1="1.524" x2="0.508" y2="1.524" width="0.1524" layer="51"/>
-<wire x1="-0.762" y1="2.032" x2="-0.762" y2="1.905" width="0.1524" layer="51"/>
-<wire x1="-0.889" y1="1.778" x2="-0.762" y2="1.905" width="0.1524" layer="51"/>
-<wire x1="-0.762" y1="1.905" x2="-0.762" y2="1.524" width="0.1524" layer="51"/>
-<wire x1="-0.889" y1="1.778" x2="-0.635" y2="1.778" width="0.1524" layer="51"/>
-<wire x1="-0.635" y1="1.778" x2="-0.762" y2="1.905" width="0.1524" layer="51"/>
-<wire x1="-0.635" y1="-1.524" x2="-0.381" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="0.127" y1="-2.159" x2="-0.381" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="0.127" y1="-2.159" x2="0.762" y2="-2.159" width="0.1524" layer="51"/>
-<wire x1="2.667" y1="-2.159" x2="2.667" y2="-5.08" width="0.1524" layer="51"/>
-<wire x1="2.667" y1="-5.08" x2="-0.254" y2="-5.08" width="0.1524" layer="51"/>
-<wire x1="0.762" y1="-2.159" x2="0.762" y2="-2.032" width="0.1524" layer="51"/>
-<wire x1="0.762" y1="-2.159" x2="2.667" y2="-2.159" width="0.1524" layer="51"/>
-<wire x1="0.762" y1="-1.651" x2="5.08" y2="-1.651" width="0.1524" layer="51"/>
-<wire x1="5.08" y1="-1.651" x2="5.08" y2="-2.921" width="0.1524" layer="51"/>
-<wire x1="0.635" y1="-1.905" x2="0.762" y2="-2.032" width="0.1524" layer="51"/>
-<wire x1="0.762" y1="-2.032" x2="0.762" y2="-1.651" width="0.1524" layer="51"/>
-<wire x1="0.762" y1="-2.032" x2="0.889" y2="-1.905" width="0.1524" layer="51"/>
-<wire x1="0.889" y1="-1.905" x2="0.635" y2="-1.905" width="0.1524" layer="51"/>
-<wire x1="0.889" y1="0.508" x2="0.127" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="0.889" y1="0.508" x2="0.889" y2="-0.508" width="0.1524" layer="51"/>
-<wire x1="0.127" y1="-0.889" x2="0.889" y2="-0.508" width="0.1524" layer="51"/>
-<wire x1="0.127" y1="-0.889" x2="-0.381" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-3.048" y1="1.651" x2="-3.048" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-3.048" y1="0.889" x2="-3.048" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-3.048" y1="-0.889" x2="-3.048" y2="-1.651" width="0.1524" layer="51"/>
-<wire x1="-1.016" y1="0.889" x2="-1.016" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-1.016" y1="0.889" x2="0.127" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-1.016" y1="-0.889" x2="-2.286" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-2.286" y1="0.889" x2="-2.286" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-2.286" y1="0.889" x2="-1.651" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-3.048" y1="0.889" x2="-2.286" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-2.286" y1="-0.889" x2="-3.048" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-1.651" y1="0.889" x2="-1.016" y2="0.889" width="0.1524" layer="51"/>
-<wire x1="-0.381" y1="-0.889" x2="-1.016" y2="-0.889" width="0.1524" layer="51"/>
-<circle x="2.667" y="-2.159" radius="0.127" width="0.1524" layer="51"/>
-<circle x="-0.254" y="2.032" radius="0.127" width="0.1524" layer="51"/>
-<pad name="4" x="5.7404" y="-4.3688" drill="1.4986" shape="octagon"/>
-<pad name="5" x="-1.7526" y="-4.9022" drill="1.4986" shape="octagon"/>
-<pad name="1" x="-5.0038" y="-0.2032" drill="1.4986" shape="octagon"/>
-<pad name="3" x="1.4478" y="2.3876" drill="1.4986"/>
-<pad name="2" x="2.8448" y="4.9022" drill="1.4986"/>
-<text x="-6.731" y="3.81" size="1.27" layer="21" ratio="10">3,5mm</text>
-<text x="-6.35" y="-1.27" size="1.27" layer="51" ratio="10">1</text>
-<text x="4.191" y="3.81" size="1.27" layer="51" ratio="10">2</text>
-<text x="2.794" y="1.27" size="1.27" layer="51" ratio="10">3</text>
-<text x="5.461" y="-2.794" size="1.27" layer="51" ratio="10">4</text>
-<text x="-0.127" y="-4.699" size="1.27" layer="51" ratio="10">5</text>
-<text x="-5.715" y="6.35" size="1.27" layer="25" ratio="10">&gt;NAME</text>
-<text x="-6.35" y="-7.62" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-</package>
-</packages>
-</library>
 <library name="DS1820">
 <description>Dallas DS1820 (TO-92)
 &lt;br&gt;
@@ -1646,6 +1559,41 @@ We've spent an enormous amount of time creating and checking these footprints an
 </package>
 </packages>
 </library>
+<library name="PJ-328 Jack">
+<packages>
+<package name="PG203J">
+<description>&lt;b&gt;3.5mm Mic/Headphone Jack&lt;/b&gt;
+&lt;p&gt;Stereo microphone/headphone jack&lt;p&gt;
+ PJ-328</description>
+<text x="3.55" y="-5.77" size="1.27" layer="51" ratio="10">1</text>
+<text x="12.891" y="-5.79" size="1.27" layer="51" ratio="10">2</text>
+<text x="5.424" y="-1.47" size="1.27" layer="51" ratio="10">3</text>
+<text x="13.361" y="-2.994" size="1.27" layer="51" ratio="10">4</text>
+<text x="2.313" y="-1.489" size="1.27" layer="51" ratio="10">5</text>
+<text x="5.985" y="0.15" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="3.75" y="-7.72" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<wire x1="14.5" y1="0" x2="14.5" y2="-6" width="0.127" layer="21"/>
+<wire x1="14.5" y1="-6" x2="0" y2="-6" width="0.127" layer="21"/>
+<wire x1="0" y1="-6" x2="0" y2="-5.5" width="0.127" layer="21"/>
+<wire x1="0" y1="-5.5" x2="0" y2="-0.5" width="0.127" layer="21"/>
+<wire x1="0" y1="-0.5" x2="0" y2="0" width="0.127" layer="21"/>
+<wire x1="0" y1="0" x2="14.5" y2="0" width="0.127" layer="21"/>
+<smd name="TIP_S" x="15.8" y="-2.3" dx="2.5" dy="2" layer="1" roundness="10" rot="R180"/>
+<wire x1="0" y1="-0.5" x2="-2.4" y2="-0.5" width="0.127" layer="21"/>
+<wire x1="-2.4" y1="-0.5" x2="-2.4" y2="-5.5" width="0.127" layer="21"/>
+<wire x1="-2.4" y1="-5.5" x2="0" y2="-5.5" width="0.127" layer="21"/>
+<wire x1="-2.4" y1="-0.5" x2="-2.5" y2="-0.5" width="0.127" layer="21"/>
+<wire x1="-2.5" y1="-0.5" x2="-2.5" y2="-5.5" width="0.127" layer="21"/>
+<wire x1="-2.5" y1="-5.5" x2="-2.4" y2="-5.5" width="0.127" layer="21"/>
+<hole x="3.5" y="-3" drill="2"/>
+<hole x="10.5" y="-3" drill="2"/>
+<smd name="RING" x="4.3" y="0.5" dx="2.5" dy="2" layer="1" roundness="10" rot="R90"/>
+<smd name="GND" x="2.4" y="-6.5" dx="2.5" dy="2" layer="1" roundness="10" rot="R90"/>
+<smd name="RNG_S" x="1.5" y="0.5" dx="2.5" dy="1.2" layer="1" roundness="10" rot="R90"/>
+<smd name="TIP" x="11.7" y="-6.5" dx="2.5" dy="2" layer="1" roundness="10" rot="R90"/>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -1866,25 +1814,13 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="NAME" x="29.591" y="7.239" size="0.8128" layer="25"/>
 <attribute name="VALUE" x="24.511" y="4.191" size="1.27" layer="27"/>
 </element>
-<element name="DOOR_CLOSED" library="con-hirschmann" package="PG203J" value="PG203J" x="7.62" y="26.67" smashed="yes">
-<attribute name="MPN" value="" x="7.62" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="" x="7.62" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="7.62" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="unknown" x="7.62" y="26.67" size="1.778" layer="27" display="off"/>
+<element name="DOOR_CLOSED" library="PJ-328 Jack" package="PG203J" value="PG203JPJ-328" x="7.62" y="26.67" smashed="yes">
 <attribute name="NAME" x="2.8575" y="23.8125" size="1.016" layer="25" ratio="10"/>
 </element>
-<element name="DOOR_TRIGGER" library="con-hirschmann" package="PG203J" value="PG203J" x="7.62" y="40.64" smashed="yes">
-<attribute name="MPN" value="" x="7.62" y="40.64" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="" x="7.62" y="40.64" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="7.62" y="40.64" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="unknown" x="7.62" y="40.64" size="1.778" layer="27" display="off"/>
+<element name="DOOR_TRIGGER" library="PJ-328 Jack" package="PG203J" value="PG203JPJ-328" x="7.62" y="40.64" smashed="yes">
 <attribute name="NAME" x="2.54" y="37.7825" size="1.016" layer="25" ratio="10" rot="R180" align="top-right"/>
 </element>
-<element name="DOOR_OPEN" library="con-hirschmann" package="PG203J" value="PG203J" x="7.62" y="12.7" smashed="yes">
-<attribute name="MPN" value="" x="7.62" y="12.7" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="" x="7.62" y="12.7" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="7.62" y="12.7" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="unknown" x="7.62" y="12.7" size="1.778" layer="27" display="off"/>
+<element name="DOOR_OPEN" library="PJ-328 Jack" package="PG203J" value="PG203JPJ-328" x="7.62" y="12.7" smashed="yes">
 <attribute name="NAME" x="3.175" y="9.8425" size="1.016" layer="25" ratio="10" rot="R180" align="top-right"/>
 </element>
 <element name="IC1" library="DS1820" package="TO-92" value="DS1820" x="5.08" y="67.31" smashed="yes" rot="R90">
@@ -1973,9 +1909,9 @@ Please make sure your boards conform to these design rules.</description>
 <signal name="GND">
 <contactref element="J1" pad="3"/>
 <contactref element="IC2" pad="1"/>
-<contactref element="DOOR_CLOSED" pad="1"/>
+<contactref element="DOOR_CLOSED" pad="GND"/>
 <contactref element="C1" pad="2"/>
-<contactref element="DOOR_OPEN" pad="1"/>
+<contactref element="DOOR_OPEN" pad="GND"/>
 <contactref element="C2" pad="2"/>
 <contactref element="U$1" pad="GND"/>
 <contactref element="C6" pad="2"/>
@@ -2014,9 +1950,9 @@ Please make sure your boards conform to these design rules.</description>
 </signal>
 <signal name="+3.3V">
 <contactref element="IC2" pad="2"/>
-<contactref element="DOOR_OPEN" pad="5"/>
+<contactref element="DOOR_OPEN" pad="TIP"/>
 <contactref element="C2" pad="1"/>
-<contactref element="DOOR_CLOSED" pad="5"/>
+<contactref element="DOOR_CLOSED" pad="TIP"/>
 <contactref element="C1" pad="1"/>
 <contactref element="U$1" pad="VCC"/>
 <contactref element="IC1" pad="3"/>
@@ -2040,30 +1976,30 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="17.78" y1="24" x2="21.59" y2="24" width="0" layer="19" extent="1-1"/>
 <wire x1="21.59" y1="17.65" x2="21.59" y2="24" width="0" layer="19" extent="1-1"/>
 <wire x1="25.4" y1="17.65" x2="21.59" y2="17.65" width="0" layer="19" extent="1-1"/>
-<wire x1="5.8674" y1="21.7678" x2="17.78" y2="24" width="0" layer="19" extent="1-1"/>
-<wire x1="5.8674" y1="7.7978" x2="5.8674" y2="21.7678" width="0" layer="19" extent="1-1"/>
+<wire x1="19.32" y1="20.17" x2="17.78" y2="24" width="0" layer="19" extent="1-1"/>
+<wire x1="19.32" y1="6.2" x2="19.32" y2="20.17" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="ARD05">
-<contactref element="DOOR_OPEN" pad="2"/>
+<contactref element="DOOR_OPEN" pad="RING"/>
 <contactref element="U$1" pad="GPIO5"/>
-<wire x1="10.4648" y1="17.6022" x2="28.52" y2="67.11" width="0" layer="19" extent="1-1"/>
+<wire x1="11.92" y1="13.2" x2="28.52" y2="67.11" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="ARD04">
-<contactref element="DOOR_CLOSED" pad="2"/>
+<contactref element="DOOR_CLOSED" pad="RING"/>
 <contactref element="U$1" pad="GPIO4"/>
-<wire x1="10.4648" y1="31.5722" x2="28.52" y2="69.11" width="0" layer="19" extent="1-1"/>
+<wire x1="11.92" y1="27.17" x2="28.52" y2="69.11" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="DOOR+">
 <contactref element="CTRL_OUT" pad="7"/>
-<contactref element="DOOR_TRIGGER" pad="2"/>
-<wire x1="10.4648" y1="45.5422" x2="22.5425" y2="39.37" width="0" layer="19" extent="1-1"/>
+<contactref element="DOOR_TRIGGER" pad="RING"/>
+<wire x1="11.92" y1="41.14" x2="22.5425" y2="39.37" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="CTRL-">
 <contactref element="CTRL_OUT" pad="8"/>
 <contactref element="CTRL_OUT" pad="5"/>
-<contactref element="DOOR_TRIGGER" pad="1"/>
+<contactref element="DOOR_TRIGGER" pad="GND"/>
 <wire x1="22.5425" y1="36.83" x2="22.5425" y2="44.45" width="0" layer="19" extent="1-1"/>
-<wire x1="2.6162" y1="40.4368" x2="22.5425" y2="36.83" width="0" layer="19" extent="1-1"/>
+<wire x1="10.02" y1="34.14" x2="22.5425" y2="36.83" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$3">
 <contactref element="CTRL_OUT" pad="6"/>
@@ -2071,9 +2007,9 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="22.5425" y1="41.91" x2="16.51" y2="51.94" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="LIGHTS+">
-<contactref element="DOOR_TRIGGER" pad="5"/>
+<contactref element="DOOR_TRIGGER" pad="TIP"/>
 <contactref element="C3" pad="2"/>
-<wire x1="5.8674" y1="35.7378" x2="16.51" y2="54.74" width="0" layer="19" extent="1-1"/>
+<wire x1="19.32" y1="34.14" x2="16.51" y2="54.74" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="ARD12">
 <contactref element="CTRL_OUT" pad="4"/>
