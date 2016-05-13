@@ -8617,7 +8617,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <part name="R2" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
 <part name="R3" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
 <part name="C5" library="resistor" deviceset="C-EU" device="C1206" value="100nF"/>
-<part name="R4" library="resistor" deviceset="R-EU_" device="M3216" value="50"/>
+<part name="R4" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
