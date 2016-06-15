@@ -9,17 +9,17 @@
 <grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.0125" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
@@ -1664,6 +1664,36 @@ We've spent an enormous amount of time creating and checking these footprints an
 </package>
 </packages>
 </library>
+<library name="bss138_10">
+<description>&lt;b&gt;Fairchild BSS138 Field Effect Transistor&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+Version 1.0&lt;br&gt;
+&amp;copy; 2015 Samuel Lourenço</description>
+<packages>
+<package name="SOT23">
+<description>&lt;b&gt;SOT-23 Plastic Small Outline&lt;/b&gt;</description>
+<wire x1="1.45" y1="0.65" x2="1.45" y2="-0.37" width="0.1524" layer="21"/>
+<wire x1="1.45" y1="-0.37" x2="1.45" y2="-0.65" width="0.1524" layer="51"/>
+<wire x1="-0.37" y1="-0.65" x2="0.37" y2="-0.65" width="0.1524" layer="21"/>
+<wire x1="-1.45" y1="-0.65" x2="-1.45" y2="-0.37" width="0.1524" layer="51"/>
+<wire x1="-1.45" y1="-0.37" x2="-1.45" y2="0.65" width="0.1524" layer="21"/>
+<wire x1="-1.45" y1="0.65" x2="-0.58" y2="0.65" width="0.1524" layer="21"/>
+<wire x1="0.58" y1="0.65" x2="1.45" y2="0.65" width="0.1524" layer="21"/>
+<smd name="1" x="-0.95" y="-1" dx="0.8" dy="0.9" layer="1"/>
+<smd name="2" x="0.95" y="-1" dx="0.8" dy="0.9" layer="1"/>
+<smd name="3" x="0" y="1" dx="0.8" dy="0.9" layer="1"/>
+<text x="-1.85" y="-0.6" size="1.27" layer="25" rot="R90">&gt;NAME</text>
+<text x="3.15" y="-0.6" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<rectangle x1="-1.15" y1="-1.2" x2="-0.75" y2="-0.65" layer="51"/>
+<rectangle x1="-0.2" y1="0.65" x2="0.2" y2="1.2" layer="51"/>
+<rectangle x1="0.75" y1="-1.2" x2="1.15" y2="-0.65" layer="51"/>
+<wire x1="-1.45" y1="-0.65" x2="-0.37" y2="-0.65" width="0.1524" layer="51"/>
+<wire x1="0.37" y1="-0.65" x2="1.45" y2="-0.65" width="0.1524" layer="51"/>
+<wire x1="-0.58" y1="0.65" x2="0.58" y2="0.65" width="0.1524" layer="51"/>
+<rectangle x1="-0.6" y1="-0.4" x2="0.6" y2="0.4" layer="35"/>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -1964,6 +1994,12 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="VALUE" x="20.6375" y="72.39" size="0.6096" layer="25"/>
 </element>
 <element name="S1" library="SparkFun-Electromechanical" package="TACTILE-SWITCH-1101NE" value="RESET-SWITCH" x="30.48" y="43.18" rot="R270"/>
+<element name="Q4" library="bss138_10" package="SOT23" value="IRLML2502" x="3.81" y="36.83">
+<attribute name="MPN" value="BSS138" x="3.81" y="36.83" size="1.778" layer="27" display="off"/>
+<attribute name="OC_NEWARK" value="67R2009" x="3.81" y="36.83" size="1.778" layer="27" display="off"/>
+<attribute name="OC_FARNELL" value="9845330" x="3.81" y="36.83" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="Fairchild" x="3.81" y="36.83" size="1.778" layer="27" display="off"/>
+</element>
 </elements>
 <signals>
 <signal name="GND" airwireshidden="yes">
@@ -1978,7 +2014,6 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="C8" pad="C"/>
 <contactref element="C9" pad="C"/>
 <contactref element="C4" pad="2"/>
-<contactref element="J1" pad="1"/>
 <contactref element="R9" pad="1"/>
 <contactref element="R10" pad="1"/>
 <contactref element="R4" pad="1"/>
@@ -2064,11 +2099,12 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="6.4008" y1="76.8096" x2="7.0104" y2="76.2" width="0.1524" layer="1"/>
 <wire x1="6.4008" y1="76.8096" x2="6.35" y2="76.835" width="0.1524" layer="1"/>
 <via x="9.144" y="52.7304" extent="1-16" drill="0.3302"/>
+<contactref element="Q4" pad="2"/>
+<wire x1="10.795" y1="28.2575" x2="4.76" y2="35.83" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="+5V">
 <contactref element="IC2" pad="3"/>
 <contactref element="C8" pad="A"/>
-<contactref element="J1" pad="3"/>
 <wire x1="22.2504" y1="68.7324" x2="24.5364" y2="71.0184" width="0.1524" layer="1"/>
 <wire x1="24.5364" y1="71.0184" x2="24.635" y2="71.12" width="0.1524" layer="1"/>
 <wire x1="22.2504" y1="68.7324" x2="22.1996" y2="68.6689" width="0.1524" layer="1"/>
@@ -2080,11 +2116,17 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="3.6576" y1="53.9496" x2="3.6576" y2="54.864" width="0.1524" layer="1"/>
 <wire x1="2.4384" y1="52.7304" x2="3.6576" y2="53.9496" width="0.1524" layer="1"/>
 <wire x1="2.4384" y1="49.53" x2="2.4384" y2="52.7304" width="0.1524" layer="1"/>
-<wire x1="1.0668" y1="48.1584" x2="2.4384" y2="49.53" width="0.1524" layer="1"/>
-<wire x1="1.0668" y1="43.1292" x2="1.0668" y2="48.1584" width="0.1524" layer="1"/>
-<wire x1="7.0104" y1="37.1856" x2="1.0668" y2="43.1292" width="0.1524" layer="1"/>
 <wire x1="22.098" y1="68.58" x2="22.1996" y2="68.6689" width="0.1524" layer="1"/>
-<wire x1="7.0104" y1="37.1856" x2="7.16" y2="37.1475" width="0.1524" layer="1"/>
+<contactref element="J1" pad="1"/>
+<wire x1="12.54125" y1="37.1475" x2="13.26" y2="37.1475" width="0.1524" layer="1"/>
+<wire x1="2.54" y1="43.33875" x2="12.54125" y2="37.1475" width="0.1524" layer="1"/>
+<wire x1="1.42875" y1="43.33875" x2="2.54" y2="43.33875" width="0.1524" layer="1"/>
+<wire x1="1.11125" y1="43.65625" x2="1.42875" y2="43.33875" width="0.1524" layer="1"/>
+<wire x1="1.11125" y1="48.26" x2="1.11125" y2="43.65625" width="0.1524" layer="1"/>
+<wire x1="2.38125" y1="49.53" x2="1.11125" y2="48.26" width="0.1524" layer="1"/>
+<wire x1="2.38125" y1="49.53" x2="2.4384" y2="49.53" width="0.1524" layer="1"/>
+<contactref element="Q4" pad="1"/>
+<wire x1="2.86" y1="35.83" x2="1.42875" y2="43.33875" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="+3.3V">
 <contactref element="IC2" pad="2"/>
@@ -2456,6 +2498,11 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="21.9456" y1="58.5216" x2="24.2316" y2="56.2356" width="0.1524" layer="1"/>
 <wire x1="24.2316" y1="54.7116" x2="24.26" y2="54.61" width="0.1524" layer="1"/>
 <wire x1="21.9456" y1="58.5216" x2="21.91" y2="58.59" width="0.1524" layer="1"/>
+</signal>
+<signal name="N$1">
+<contactref element="J1" pad="3"/>
+<contactref element="Q4" pad="3"/>
+<wire x1="3.81" y1="37.83" x2="7.16" y2="37.1475" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <errors>

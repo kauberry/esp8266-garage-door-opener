@@ -7,14 +7,14 @@
 #include <EEPROM.h>
 #include <string.h>
 // #include <ArduinoOTA.h>
-#define wifi_ssid "*********"
-#define wifi_password "********"
+#define wifi_ssid "********"
+#define wifi_password "**********"
 #define my_id 1
 #define mqtt_server "192.168.1.7"
 
 
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define LISTEN_PORT 80
 
 static int TEMP_PORT = 2; //D6
@@ -45,6 +45,7 @@ String door_triggered_out_topic;
 String light_triggered_out_topic;
 String subscription_in_topic;
 
+int door_trigger_delay_ms = 500;
 
 // OneWire ds(D6);
 OneWire ds(TEMP_PORT);
@@ -100,6 +101,8 @@ bool setStatus(){
 }
 
 void setup_wifi() {
+  ssid = wifi_ssid;
+  password = wifi_password;
   delay(10);
   if(DEBUG_MODE){
     Serial.println();
@@ -107,6 +110,10 @@ void setup_wifi() {
     Serial.println(ssid);
   }
   WiFi.mode(WIFI_STA);
+  Serial.print("SSID: ");
+  Serial.println(ssid);
+  Serial.print("PW:");
+  Serial.println(password);
   WiFi.begin(ssid.c_str(),password.c_str());
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
@@ -216,10 +223,22 @@ void signalStartup(){
 }
 
 int door_trigger(){
-  digitalWrite(DOOR_TRIG_PIN,HIGH);
-  pubMQTT(door_triggered_out_topic, "triggered");
-  delay(1000);
-  digitalWrite(DOOR_TRIG_PIN, LOW);
+  if(is_up != 0){
+    digitalWrite(DOOR_TRIG_PIN,HIGH);
+    if(is_up == 1){
+      digitalWrite(UP_IND_PIN, LOW);
+      digitalWrite(DN_IND_PIN, HIGH);
+    }else if(is_up == -1){
+      digitalWrite(DN_IND_PIN, LOW);
+      digitalWrite(UP_IND_PIN, HIGH);
+    }
+    pubMQTT(door_triggered_out_topic, "triggered");
+    delay(door_trigger_delay_ms);
+    digitalWrite(DOOR_TRIG_PIN, LOW);
+    digitalWrite(DN_IND_PIN,LOW);
+    digitalWrite(UP_IND_PIN,LOW);
+  }
+  newState = setStatus();
 }
 
 int light_trigger(){
@@ -243,7 +262,6 @@ int temperature_request(){
     Serial.println("deg C");
   }
   pubMQTT(temperature_out_topic, String(myTempC));
-
 }
 
 

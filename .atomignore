@@ -6,3 +6,8 @@ platformio.ini
 .git*
 .travis*
 .atomignore
+*.job
+*.pro
+*.b#*
+*.s#*
+.*
