@@ -65,7 +65,7 @@ String password;
 
 
 static float temp_delta_trigger = 0.5;
-static long forced_reporting_interval = 60000;
+static long forced_reporting_interval = 300000;
 
 int up_value;
 int dn_value;
@@ -91,12 +91,12 @@ bool setStatus(){
   int current_status;
   bool status_changed = false;
   current_status = up_value - dn_value;
+  digitalWrite(UP_IND_PIN, up_value);
+  digitalWrite(DN_IND_PIN, dn_value);
   if(current_status != is_up){
-    digitalWrite(UP_IND_PIN, up_value);
-    digitalWrite(DN_IND_PIN, dn_value);
-    is_up = current_status;
     status_changed = true;
   }
+  is_up = current_status;
   return status_changed;
 }
 
@@ -269,22 +269,27 @@ String evalIsUp(){
   String myState = "indeterminate";
   switch(is_up){
     case 1:
-      myState = "open";
+      // myState = "open";
+      myState = "0";
       break;
     case -1:
-      myState = "closed";
+      // myState = "closed";
+      myState = "1";
       break;
     case 0:
       if(motion_direction > 0){
-        myState = "opening";
+        // myState = "opening";
+        myState = "2";
       }else if(motion_direction < 0){
-        myState = "closing";
+        // myState = "closing";
+        myState = "3";
       }else{
-        myState = "moving";
+        // myState = "stopped";
+        myState = "4";
       }
       break;
     default:
-      myState = "indeterminate";
+      myState = "4";
   }
   return myState;
 }
@@ -350,7 +355,7 @@ bool readWebCredentials(){
 
 void setup() {
   Serial.begin(115200);
-  newState = setStatus();
+  // newState = setStatus();
   entry_state = is_up;
   currentState = evalIsUp();
   currentTemperatureC = getTemperature();
@@ -378,6 +383,7 @@ void setup() {
   previousTemperatureC = 4000.0;
 
   signalStartup();
+  // newState = setStatus();
 }
 
 float reportingTemperature;
