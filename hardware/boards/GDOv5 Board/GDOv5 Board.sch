@@ -8977,7 +8977,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <part name="R1" library="resistor" deviceset="R-EU_" device="M3216" value="4.7K"/>
 <part name="JP1" library="adafruit" deviceset="PINHD-1X6" device=""/>
 <part name="S_LED" library="adafruit" deviceset="LED" device="5MM"/>
-<part name="R5" library="resistor" deviceset="R-EU_" device="M3216" value="250"/>
+<part name="R5" library="resistor" deviceset="R-EU_" device="M3216" value="250Ω"/>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
 <part name="R9" library="resistor" deviceset="R-EU_" device="M3216" value="50Ω"/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
@@ -8994,16 +8994,18 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <part name="R3" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
 <part name="C5" library="resistor" deviceset="C-EU" device="C1206" value="100nF"/>
 <part name="R4" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
-<part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
-<part name="R6" library="resistor" deviceset="R-EU_" device="M3216" value="100k"/>
+<part name="R6" library="resistor" deviceset="R-EU_" device="M3216" value="4.7kΩ"/>
 <part name="S1" library="SparkFun-Electromechanical" deviceset="SWITCH-MOMENTARY-2" device="-SMD-1101NE" value="RESET-SWITCH"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="Q4" library="bss138_10" deviceset="BSS138" device="" value="IRLML2502"/>
+<part name="R7" library="resistor" deviceset="R-EU_" device="M3216" value="4.7kΩ"/>
+<part name="R8" library="resistor" deviceset="R-EU_" device="M3216" value="10k"/>
+<part name="GND6" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -9163,9 +9165,6 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <attribute name="NAME" x="54.6354" y="-7.62" size="0.8128" layer="95" rot="R90"/>
 <attribute name="VALUE" x="54.61" y="-4.572" size="0.8128" layer="96" rot="R90"/>
 </instance>
-<instance part="GND6" gate="1" x="55.88" y="-12.7" smashed="yes">
-<attribute name="VALUE" x="53.34" y="-15.24" size="1.778" layer="96"/>
-</instance>
 <instance part="GND8" gate="1" x="33.02" y="-8.89" smashed="yes">
 <attribute name="VALUE" x="33.782" y="-8.636" size="1.016" layer="96"/>
 </instance>
@@ -9173,7 +9172,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <attribute name="VALUE" x="58.928" y="-9.652" size="1.27" layer="96"/>
 </instance>
 <instance part="GND10" gate="1" x="5.08" y="-12.7" smashed="yes">
-<attribute name="VALUE" x="2.54" y="-15.24" size="1.778" layer="96"/>
+<attribute name="VALUE" x="2.54" y="-15.24" size="1.4224" layer="96"/>
 </instance>
 <instance part="R6" gate="G$1" x="38.1" y="10.16" smashed="yes" rot="R90">
 <attribute name="NAME" x="36.8554" y="7.62" size="1.27" layer="95" rot="R90"/>
@@ -9193,6 +9192,17 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <instance part="Q4" gate="G$1" x="0" y="101.6" smashed="yes" rot="MR270">
 <attribute name="VALUE" x="-4.572" y="96.266" size="1.27" layer="96" rot="MR180"/>
 <attribute name="NAME" x="-1.016" y="104.14" size="1.27" layer="95" rot="MR180"/>
+</instance>
+<instance part="R7" gate="G$1" x="71.12" y="15.24" smashed="yes" rot="R180">
+<attribute name="NAME" x="73.66" y="13.9954" size="1.27" layer="95" rot="R180"/>
+<attribute name="VALUE" x="70.612" y="13.97" size="1.27" layer="96" rot="R180"/>
+</instance>
+<instance part="R8" gate="G$1" x="124.46" y="12.7" smashed="yes" rot="R180">
+<attribute name="NAME" x="127" y="11.4554" size="1.27" layer="95" rot="R180"/>
+<attribute name="VALUE" x="123.952" y="11.43" size="1.27" layer="96" rot="R180"/>
+</instance>
+<instance part="GND6" gate="1" x="55.88" y="-15.24" smashed="yes">
+<attribute name="VALUE" x="53.848" y="-17.272" size="1.27" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -9265,10 +9275,6 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <junction x="60.96" y="33.02"/>
 </segment>
 <segment>
-<pinref part="R4" gate="G$1" pin="1"/>
-<pinref part="GND6" gate="1" pin="GND"/>
-</segment>
-<segment>
 <pinref part="Q2" gate="G$1" pin="S"/>
 <pinref part="GND8" gate="1" pin="GND"/>
 <wire x1="33.02" y1="-6.35" x2="33.02" y2="-5.08" width="0.1524" layer="91"/>
@@ -9294,6 +9300,11 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <pinref part="Q4" gate="G$1" pin="S"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="5.08" y1="99.06" x2="15.24" y2="99.06" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R4" gate="G$1" pin="1"/>
+<wire x1="55.88" y1="-10.16" x2="55.88" y2="-12.7" width="0.1524" layer="91"/>
+<pinref part="GND6" gate="1" pin="GND"/>
 </segment>
 </net>
 <net name="+5V" class="0">
@@ -9377,6 +9388,16 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <pinref part="R6" gate="G$1" pin="2"/>
 <wire x1="38.1" y1="15.24" x2="38.1" y2="17.78" width="0.1524" layer="91"/>
 <label x="38.1" y="17.78" size="1.016" layer="95"/>
+</segment>
+<segment>
+<pinref part="R7" gate="G$1" pin="1"/>
+<wire x1="76.2" y1="15.24" x2="78.74" y2="15.24" width="0.1524" layer="91"/>
+<label x="78.74" y="15.24" size="1.27" layer="95"/>
+</segment>
+<segment>
+<pinref part="R8" gate="G$1" pin="1"/>
+<wire x1="129.54" y1="12.7" x2="134.62" y2="12.7" width="0.1524" layer="91"/>
+<label x="132.08" y="12.7" size="1.27" layer="95"/>
 </segment>
 </net>
 <net name="ARD05" class="0">
@@ -9495,9 +9516,12 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <segment>
 <pinref part="Q3" gate="G$1" pin="D"/>
 <wire x1="60.96" y1="7.62" x2="60.96" y2="10.16" width="0.1524" layer="91"/>
+<label x="66.04" y="10.16" size="1.27" layer="95"/>
+<label x="66.04" y="10.16" size="1.27" layer="95"/>
 <wire x1="60.96" y1="10.16" x2="68.58" y2="10.16" width="0.1524" layer="91"/>
-<label x="66.04" y="10.16" size="1.27" layer="95"/>
-<label x="66.04" y="10.16" size="1.27" layer="95"/>
+<wire x1="60.96" y1="10.16" x2="60.96" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="15.24" x2="66.04" y2="15.24" width="0.1524" layer="91"/>
+<pinref part="R7" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="S1" gate="G$1" pin="1"/>
@@ -9510,6 +9534,11 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <pinref part="U$1" gate="G$1" pin="RESET"/>
 <wire x1="43.18" y1="104.14" x2="38.1" y2="104.14" width="0.1524" layer="91"/>
 <label x="35.56" y="104.14" size="1.27" layer="95"/>
+</segment>
+<segment>
+<wire x1="114.3" y1="12.7" x2="119.38" y2="12.7" width="0.1524" layer="91"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<label x="109.22" y="12.7" size="1.27" layer="95"/>
 </segment>
 </net>
 <net name="ARD15" class="0">
@@ -9533,7 +9562,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <segment>
 <pinref part="Q2" gate="G$1" pin="D"/>
 <wire x1="33.02" y1="5.08" x2="38.1" y2="5.08" width="0.1524" layer="91"/>
-<label x="40.64" y="7.62" size="1.27" layer="95"/>
+<label x="43.18" y="5.08" size="1.27" layer="95"/>
 <junction x="38.1" y="5.08"/>
 <wire x1="38.1" y1="5.08" x2="43.18" y2="5.08" width="0.1524" layer="91"/>
 <pinref part="R6" gate="G$1" pin="1"/>
