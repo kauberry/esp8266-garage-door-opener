@@ -1,14 +1,14 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ESP8266mDNS.h>
-// #include <WiFiUdp.h>
+#include <WiFiUdp.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EEPROM.h>
 #include <string.h>
-// #include <ArduinoOTA.h>
-#define wifi_ssid "********"
-#define wifi_password "**********"
+#include <ArduinoOTA.h>
+#define wifi_ssid "HomeWiFi"
+#define wifi_password "navi3com"
 #define my_id 1
 #define mqtt_server "192.168.1.7"
 
@@ -129,8 +129,33 @@ void setup_wifi() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback_handler);
 
+  ArduinoOTA.onStart([]() {
+    Serial.println("Start");
+  });
+
+  ArduinoOTA.onEnd([](){
+    Serial.println("\nEnd");
+  });
+
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total){
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+
+  ArduinoOTA.onError([](ota_error_t error){
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+  });
+  ArduinoOTA.begin();
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
 
 }
+
+
 
 void callback_handler(char* topic, byte* payload, unsigned int length){
   if(DEBUG_MODE){
@@ -356,6 +381,7 @@ bool readWebCredentials(){
 void setup() {
   Serial.begin(115200);
   // newState = setStatus();
+
   entry_state = is_up;
   currentState = evalIsUp();
   currentTemperatureC = getTemperature();
@@ -391,6 +417,7 @@ void loop(){
   if(!client.connected()){
     reconnect();
   }
+  ArduinoOTA.handle();
   newState = setStatus();
   motion_direction = is_up - entry_state;
   long now = millis();
