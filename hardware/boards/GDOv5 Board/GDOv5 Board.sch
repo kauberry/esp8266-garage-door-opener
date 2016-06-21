@@ -9100,7 +9100,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 </instance>
 <instance part="CTRL_OUT" gate="B" x="81.28" y="35.56" smashed="yes">
 <attribute name="NAME" x="74.295" y="41.275" size="1.4224" layer="95"/>
-<attribute name="VALUE" x="74.295" y="27.94" size="1.4224" layer="96"/>
+<attribute name="VALUE" x="74.295" y="27.94" size="1.27" layer="96"/>
 </instance>
 <instance part="IC1" gate="G$1" x="-2.286" y="39.624"/>
 <instance part="IC2" gate="G$1" x="-5.588" y="79.756"/>
@@ -9116,7 +9116,7 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <attribute name="VALUE" x="108.458" y="102.997" size="1.27" layer="96"/>
 </instance>
 <instance part="GND7" gate="1" x="83.82" y="83.82" smashed="yes">
-<attribute name="VALUE" x="81.28" y="81.28" size="1.778" layer="96"/>
+<attribute name="VALUE" x="81.28" y="81.28" size="1.27" layer="96"/>
 </instance>
 <instance part="R1" gate="G$1" x="-2.286" y="49.784"/>
 <instance part="JP1" gate="A" x="93.98" y="5.08" rot="MR180"/>
@@ -9162,8 +9162,8 @@ Source: &lt;a href="http://www.fairchildsemi.com/datasheets/BS/BSS138.pdf"&gt;ht
 <attribute name="VALUE" x="40.513" y="-11.684" size="0.8128" layer="96"/>
 </instance>
 <instance part="R4" gate="G$1" x="55.88" y="-5.08" smashed="yes" rot="R90">
-<attribute name="NAME" x="54.6354" y="-7.62" size="0.8128" layer="95" rot="R90"/>
-<attribute name="VALUE" x="54.61" y="-4.572" size="0.8128" layer="96" rot="R90"/>
+<attribute name="NAME" x="54.6354" y="-7.62" size="1.016" layer="95" rot="R90"/>
+<attribute name="VALUE" x="54.61" y="-4.572" size="1.27" layer="96" rot="R90"/>
 </instance>
 <instance part="GND8" gate="1" x="33.02" y="-8.89" smashed="yes">
 <attribute name="VALUE" x="33.782" y="-8.636" size="1.016" layer="96"/>
