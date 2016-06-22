@@ -5,12 +5,14 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EEPROM.h>
+#include <FS.h>
 #include <string.h>
 #include <ArduinoOTA.h>
 #define wifi_ssid "HomeWiFi"
 #define wifi_password "navi3com"
 #define my_id 1
 #define mqtt_server "192.168.1.7"
+#define HOSTNAME "esp8266-ota-"
 
 
 
@@ -27,6 +29,12 @@ static int DOOR_TRIG_PIN = 13;//D7;
 static int LIGHT_TRIG_PIN = 12;
 // static int ACTIVITY_LED = 16;
 
+const char* ap_default_ssid = "esp8266"; ///< Default SSID.
+const char* ap_default_psk = "esp8266esp8266"; ///< Default PSK.
+/// @}
+
+/// Uncomment the next line for verbose output over UART.
+#define SERIAL_VERBOSE
 
 String status_topic = "status";
 String temperature_topic = "temperature";
@@ -35,6 +43,7 @@ String door_control_topic = "door_trigger";
 String light_control_topic = "light_trigger";
 String status_request_topic = "status";
 String temp_request_topic = "temperature";
+String identify_topic = "identify";
 
 String out_topic_prefix = "garage/out/";
 String in_topic_prefix = "garage/in/";
@@ -44,6 +53,7 @@ String temperature_out_topic;
 String door_triggered_out_topic;
 String light_triggered_out_topic;
 String subscription_in_topic;
+
 
 int door_trigger_delay_ms = 500;
 
@@ -85,6 +95,91 @@ float previousTemperatureC;
 float currentTemperatureC;
 int door_trigger();
 
+bool loadConfig(String *ssid, String *pass)
+{
+  // open file for reading.
+  File configFile = SPIFFS.open("/cl_conf.txt", "r");
+  if (!configFile)
+  {
+    Serial.println("Failed to open cl_conf.txt.");
+
+    return false;
+  }
+
+  // Read content from config file.
+  String content = configFile.readString();
+  configFile.close();
+
+  content.trim();
+
+  // Check if ther is a second line available.
+  int8_t pos = content.indexOf("\r\n");
+  uint8_t le = 2;
+  // check for linux and mac line ending.
+  if (pos == -1)
+  {
+    le = 1;
+    pos = content.indexOf("\n");
+    if (pos == -1)
+    {
+      pos = content.indexOf("\r");
+    }
+  }
+
+  // If there is no second line: Some information is missing.
+  if (pos == -1)
+  {
+    Serial.println("Infvalid content.");
+    Serial.println(content);
+
+    return false;
+  }
+
+  // Store SSID and PSK into string vars.
+  *ssid = content.substring(0, pos);
+  *pass = content.substring(pos + le);
+
+  ssid->trim();
+  pass->trim();
+
+#ifdef SERIAL_VERBOSE
+  Serial.println("----- file content -----");
+  Serial.println(content);
+  Serial.println("----- file content -----");
+  Serial.println("ssid: " + *ssid);
+  Serial.println("psk:  " + *pass);
+#endif
+
+  return true;
+} // loadConfig
+
+
+/**
+ * @brief Save WiFi SSID and PSK to configuration file.
+ * @param ssid SSID as string pointer.
+ * @param pass PSK as string pointer,
+ * @return True or False.
+ */
+bool saveConfig(String *ssid, String *pass)
+{
+  // Open config file for writing.
+  File configFile = SPIFFS.open("/cl_conf.txt", "w");
+  if (!configFile)
+  {
+    Serial.println("Failed to open cl_conf.txt for writing");
+
+    return false;
+  }
+
+  // Save SSID and PSK.
+  configFile.println(*ssid);
+  configFile.println(*pass);
+
+  configFile.close();
+
+  return true;
+} // saveConfig
+
 bool setStatus(){
   up_value = digitalRead(UP_SENSE_PIN);
   dn_value = digitalRead(DN_SENSE_PIN);
@@ -101,58 +196,101 @@ bool setStatus(){
 }
 
 void setup_wifi() {
-  ssid = wifi_ssid;
-  password = wifi_password;
-  delay(10);
+  String station_ssid = "";
+  String station_psk = "";
+  // ssid = wifi_ssid;
+  // password = wifi_password;
+  delay(100);
+  String hostname(HOSTNAME);
+  hostname += String(ESP.getChipId(),HEX);
+  WiFi.hostname(hostname);
   if(DEBUG_MODE){
-    Serial.println();
+    Serial.println("\r\n");
+    Serial.println("Hostname: " + hostname);
+    Serial.println("\r\n");
+    Serial.print("Chip ID: 0x");
+    Serial.println(ESP.getChipId(), HEX);
+    Serial.println("\r\n");
     Serial.print("Connecting to ");
     Serial.println(ssid);
   }
-  WiFi.mode(WIFI_STA);
+  if (!SPIFFS.begin()){
+    Serial.println("Failed to mount filesystem");
+    return;
+  }
+
+  if (! loadConfig(&station_ssid, &station_psk)){
+    station_ssid = "";
+    station_psk = "";
+    Serial.println("No WiFi connection info available");
+  }
+
+  if (WiFi.getMode() != WIFI_STA){
+    WiFi.mode(WIFI_STA);
+  }
   Serial.print("SSID: ");
   Serial.println(ssid);
   Serial.print("PW:");
   Serial.println(password);
-  WiFi.begin(ssid.c_str(),password.c_str());
-  while(WiFi.status() != WL_CONNECTED){
-    delay(500);
-    Serial.print(".");
+  if (WiFi.SSID() != station_ssid || WiFi.psk() != station_psk)
+  {
+    Serial.println("WiFi config changed.");
+
+    // ... Try to connect to WiFi station.
+    WiFi.begin(station_ssid.c_str(), station_psk.c_str());
+
+    // ... Pritn new SSID
+    Serial.print("new SSID: ");
+    Serial.println(WiFi.SSID());
+
+    // ... Uncomment this for debugging output.
+    //WiFi.printDiag(Serial);
+  }else{
+    // ... Begin with sdk config.
+    WiFi.begin();
   }
-  if(DEBUG_MODE){
+
+  Serial.println("Wait for WiFi connection.");
+
+  // ... Give ESP 10 seconds to connect to station.
+  unsigned long startTime = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - startTime < 10000){
+    Serial.write('.');
+    //Serial.print(WiFi.status());
+    delay(500);
+  }
+  Serial.println();
+
+  // Check connection
+  if(WiFi.status() == WL_CONNECTED){
+    // ... print IP Address
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+  }else{
+    Serial.println("Can not connect to WiFi station. Go into AP mode.");
+    // Go into software AP mode.
+    WiFi.mode(WIFI_AP);
+    delay(10);
+    WiFi.softAP(ap_default_ssid, ap_default_psk);
+
+    Serial.print("IP address: ");
+    Serial.println(WiFi.softAPIP());
+  }
+
+  // Start OTA server.
+  ArduinoOTA.setHostname((const char *)hostname.c_str());
+  ArduinoOTA.begin();
+
+
+  #ifdef SERIAL_VERBOSE
     Serial.println("");
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-  }
+  #endif
 
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback_handler);
-
-  ArduinoOTA.onStart([]() {
-    Serial.println("Start");
-  });
-
-  ArduinoOTA.onEnd([](){
-    Serial.println("\nEnd");
-  });
-
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total){
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-
-  ArduinoOTA.onError([](ota_error_t error){
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
-  });
-  ArduinoOTA.begin();
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
 }
 
 
@@ -197,6 +335,9 @@ void topicProcessor(String topic){
   }else if (topic == temp_request_topic){
     if(DEBUG_MODE) Serial.println("Getting Current Temperature");
     temperature_request();
+  }else if (topic == identify_topic){
+    if(DEBUG_MODE) Serial.println("Processing Identify Request");
+    identify_request();
   }else{
 
   }
@@ -236,13 +377,13 @@ float getTemperature() {
   return temp;
 }
 
-void signalStartup(){
+void signalStartup(int delayTime){
   for(int i=0;i<=5;i++){
     digitalWrite(UP_IND_PIN,HIGH);
-    delay(250);
+    delay(delayTime);
     digitalWrite(UP_IND_PIN, LOW);
     digitalWrite(DN_IND_PIN,HIGH);
-    delay(250);
+    delay(delayTime);
     digitalWrite(DN_IND_PIN, LOW);
   }
 }
@@ -289,6 +430,11 @@ int temperature_request(){
   pubMQTT(temperature_out_topic, String(myTempC));
 }
 
+void identify_request(){
+  signalStartup(750);
+  return;
+}
+
 
 String evalIsUp(){
   String myState = "indeterminate";
@@ -319,65 +465,6 @@ String evalIsUp(){
   return myState;
 }
 
-void storeWebCredentials(){
-  //try to read ssid and pw from eeprom first
-  if(readWebCredentials()){
-    setup_wifi();
-  }else{
-    ssid = wifi_ssid;
-    password = wifi_password;
-    Serial.println("Clearing EEPROM");
-    for(int i = 0; i < 96; ++i){
-      EEPROM.write(i,0);
-    }
-    Serial.println(ssid);
-    Serial.println("");
-    Serial.println(password);
-    Serial.println("");
-
-    Serial.println("Writing EEPROM SSID:");
-    for(int i = 0;i < ssid.length(); ++i){
-      EEPROM.write(i, ssid[i]);
-      Serial.print("Wrote: ");
-      Serial.println(ssid[i]);
-    }
-    Serial.println("Writing EEPROM Password");
-    for(int i = 0; i < password.length(); ++i){
-      EEPROM.write(32+i, password[i]);
-      Serial.print("Wrote: ");
-      Serial.println(password[i]);
-    }
-    EEPROM.commit();
-    delay(10);
-    storeWebCredentials();
-  }
-}
-
-bool readWebCredentials(){
-  Serial.println("Reading EEPROM ssid");
-  String esid;
-  for (int i = 0; i < 32; ++i){
-    esid += char(EEPROM.read(i));
-  }
-  if(DEBUG_MODE){
-    Serial.print("SSID: ");
-    Serial.println(esid);
-    Serial.println("Reading EEPROM password");
-  }
-  String epass;
-  for(int i = 32; i < 96; ++i){
-    epass += char(EEPROM.read(i));
-  }
-  if(DEBUG_MODE){
-    Serial.print("Password: ");
-    Serial.println(epass);
-  }
-  if(esid.length() > 1){
-    return true;
-  }
-  return false;
-}
-
 void setup() {
   Serial.begin(115200);
   // newState = setStatus();
@@ -392,7 +479,7 @@ void setup() {
   status_out_topic = out_topic_prefix + String(my_id) + "/" + status_request_topic;
   subscription_in_topic = in_topic_prefix + String(my_id) + "/#";
 
-  storeWebCredentials();
+  setup_wifi();
 
   pinMode(UP_IND_PIN, OUTPUT);
   digitalWrite(UP_IND_PIN,LOW);
@@ -408,7 +495,7 @@ void setup() {
   pinMode(DN_SENSE_PIN, INPUT_PULLUP);
   previousTemperatureC = 4000.0;
 
-  signalStartup();
+  signalStartup(250);
   // newState = setStatus();
 }
 
@@ -417,7 +504,6 @@ void loop(){
   if(!client.connected()){
     reconnect();
   }
-  ArduinoOTA.handle();
   newState = setStatus();
   motion_direction = is_up - entry_state;
   long now = millis();
@@ -443,4 +529,6 @@ void loop(){
     pubMQTT(status_out_topic, currentState);
   }
   client.loop();
+  ArduinoOTA.handle();
+  yield();
 }
