@@ -20,8 +20,8 @@
 #define LISTEN_PORT 80
 
 static int TEMP_PORT = 2; //D6
-static int UP_IND_PIN = 14;//D0;
-static int DN_IND_PIN = 15;
+static int UP_IND_PIN = 15;//D0;
+static int DN_IND_PIN = 14;
 
 static int UP_SENSE_PIN = 5;//D1;
 static int DN_SENSE_PIN = 4;//D2;
@@ -34,7 +34,7 @@ const char* ap_default_psk = "esp8266esp8266"; ///< Default PSK.
 /// @}
 
 /// Uncomment the next line for verbose output over UART.
-#define SERIAL_VERBOSE
+// #define SERIAL_VERBOSE
 
 String status_topic = "status";
 String temperature_topic = "temperature";
@@ -42,13 +42,16 @@ String temperature_topic = "temperature";
 String door_control_topic = "door_trigger";
 String light_control_topic = "light_trigger";
 String status_request_topic = "status";
-String temp_request_topic = "temperature";
+String case_temp_request_topic = "case_temperature";
+String ambient_temp_request_topic = "ambient_temperature";
 String identify_topic = "identify";
 
 String out_topic_prefix = "garage/out/";
 String in_topic_prefix = "garage/in/";
 
 String status_out_topic;
+String case_temperature_out_topic;
+String ambient_temperature_out_topic;
 String temperature_out_topic;
 String door_triggered_out_topic;
 String light_triggered_out_topic;
@@ -91,8 +94,10 @@ String currentState = "Indeterminate";
 bool newState = false;
 int motion_direction = 0;
 
-float previousTemperatureC;
-float currentTemperatureC;
+float previousAmbientTemperatureC;
+float previousCaseTemperatureC;
+float currentAmbientTemperatureC;
+float currentCaseTemperatureC;
 int door_trigger();
 
 bool loadConfig(String *ssid, String *pass)
@@ -129,7 +134,7 @@ bool loadConfig(String *ssid, String *pass)
   // If there is no second line: Some information is missing.
   if (pos == -1)
   {
-    Serial.println("Infvalid content.");
+    Serial.println("Invalid content.");
     Serial.println(content);
 
     return false;
@@ -200,7 +205,7 @@ void setup_wifi() {
   String station_psk = "";
   // ssid = wifi_ssid;
   // password = wifi_password;
-  delay(100);
+  delay(500);
   String hostname(HOSTNAME);
   hostname += String(ESP.getChipId(),HEX);
   WiFi.hostname(hostname);
@@ -214,16 +219,16 @@ void setup_wifi() {
     Serial.print("Connecting to ");
     Serial.println(ssid);
   }
-  if (!SPIFFS.begin()){
-    Serial.println("Failed to mount filesystem");
-    return;
-  }
+  // if (!SPIFFS.begin()){
+  //   Serial.println("Failed to mount filesystem");
+  //   return;
+  // }
 
-  if (! loadConfig(&station_ssid, &station_psk)){
-    station_ssid = "";
-    station_psk = "";
-    Serial.println("No WiFi connection info available");
-  }
+  // if (! loadConfig(&station_ssid, &station_psk)){
+    station_ssid = wifi_ssid;
+    station_psk = wifi_password;
+    // Serial.println("No WiFi connection info available");
+  // }
 
   if (WiFi.getMode() != WIFI_STA){
     WiFi.mode(WIFI_STA);
@@ -332,9 +337,12 @@ void topicProcessor(String topic){
   }else if (topic == status_request_topic){
     if(DEBUG_MODE) Serial.println("Getting Latest Status");
     get_current_door_state();
-  }else if (topic == temp_request_topic){
-    if(DEBUG_MODE) Serial.println("Getting Current Temperature");
-    temperature_request();
+  }else if (topic == ambient_temp_request_topic){
+    if(DEBUG_MODE) Serial.println("Getting Current Ambient Temperature");
+    temperature_request(0);
+  }else if (topic == case_temp_request_topic){
+    if(DEBUG_MODE) Serial.println("Getting Current Case Temperature");
+    temperature_request(1);
   }else if (topic == identify_topic){
     if(DEBUG_MODE) Serial.println("Processing Identify Request");
     identify_request();
@@ -366,12 +374,12 @@ void pubMQTT(String topic, String topic_val){
   client.publish(topic.c_str(), topic_val.c_str(),true);
 }
 
-float getTemperature() {
+float getTemperature(uint8_t sensorIndex) {
   //Serial.println("Requesting DS18B20 temperature...");
   float temp;
   do {
     DS18B20.requestTemperatures();
-    temp = DS18B20.getTempCByIndex(0);
+    temp = DS18B20.getTempCByIndex(sensorIndex);
     delay(100);
   } while (temp == 85.0 || temp == (-127.0));
   return temp;
@@ -387,6 +395,28 @@ void signalStartup(int delayTime){
     digitalWrite(DN_IND_PIN, LOW);
   }
 }
+
+void getTempDevices(){
+  int devCount;
+  DeviceAddress d;
+  devCount = 2; //DS18B20.getDeviceCount();
+  for(int i=0;i<devCount;i++){
+    DS18B20.getAddress(d,i);
+    printAddress(d);
+  }
+}
+
+void printAddress(DeviceAddress deviceAddress)
+{
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    // zero pad the address if necessary
+    if (deviceAddress[i] < 16) Serial.print("0");
+    Serial.print(deviceAddress[i], HEX);
+  }
+  Serial.println(' ');
+}
+
 
 int door_trigger(){
   if(is_up != 0){
@@ -419,13 +449,19 @@ int get_current_door_state(){
   pubMQTT(status_out_topic, String(state));
 }
 
-int temperature_request(){
-  float myTempC = getTemperature();
+int temperature_request(uint8_t sensorIndex){
+  float myTempC = getTemperature(sensorIndex);
   myTempC = round(myTempC*10.0)/10.0;
+  String sensorName;
+  sensorName = sensorIndex == 0 ? 'ambient' : 'case';
+  temperature_out_topic = sensorIndex == 0 ? ambient_temperature_out_topic : case_temperature_out_topic;
   if(DEBUG_MODE){
     Serial.print("Reporting Temperature: ");
     Serial.print(myTempC);
-    Serial.println("deg C");
+    Serial.print("deg C");
+    Serial.print(" (");
+    Serial.print(sensorName);
+    Serial.println(")");
   }
   pubMQTT(temperature_out_topic, String(myTempC));
 }
@@ -467,15 +503,17 @@ String evalIsUp(){
 
 void setup() {
   Serial.begin(115200);
+  // delay(500);
   // newState = setStatus();
-
   entry_state = is_up;
   currentState = evalIsUp();
-  currentTemperatureC = getTemperature();
+  currentAmbientTemperatureC = getTemperature(0);
+  currentCaseTemperatureC = getTemperature(1);
 
   door_triggered_out_topic = out_topic_prefix + String(my_id) + "/" + door_control_topic;
   light_triggered_out_topic = out_topic_prefix + String(my_id) + "/" + light_control_topic;
-  temperature_out_topic = out_topic_prefix + String(my_id) + "/" + temp_request_topic;
+  case_temperature_out_topic = out_topic_prefix + String(my_id) + "/" + case_temp_request_topic;
+  ambient_temperature_out_topic = out_topic_prefix + String(my_id) + "/" + ambient_temp_request_topic;
   status_out_topic = out_topic_prefix + String(my_id) + "/" + status_request_topic;
   subscription_in_topic = in_topic_prefix + String(my_id) + "/#";
 
@@ -493,9 +531,12 @@ void setup() {
   // digitalWrite(ACTIVITY_LED,LOW);
   pinMode(UP_SENSE_PIN, INPUT_PULLUP);
   pinMode(DN_SENSE_PIN, INPUT_PULLUP);
-  previousTemperatureC = 4000.0;
+  previousAmbientTemperatureC = 4000.0;
+  previousCaseTemperatureC = 4000.0;
 
   signalStartup(250);
+  getTempDevices();
+
   // newState = setStatus();
 }
 
@@ -508,13 +549,20 @@ void loop(){
   motion_direction = is_up - entry_state;
   long now = millis();
   if(now - lastTempMsg > 2000){
-    currentTemperatureC = getTemperature();
+    currentAmbientTemperatureC = getTemperature(0);
+    currentCaseTemperatureC = getTemperature(1);
     lastTempMsg = now;
   }
-  if(abs(previousTemperatureC - currentTemperatureC) > temp_delta_trigger || now - lastForcedReport > 60000){
-    reportingTemperature = round(currentTemperatureC*10.0)/10.0;
-    pubMQTT(temperature_out_topic, String(reportingTemperature));
-    previousTemperatureC = currentTemperatureC;
+  if(abs(previousAmbientTemperatureC - currentAmbientTemperatureC) > temp_delta_trigger || now - lastForcedReport > forced_reporting_interval){
+    reportingTemperature = round(currentAmbientTemperatureC*10.0)/10.0;
+    pubMQTT(ambient_temperature_out_topic, String(reportingTemperature));
+    previousAmbientTemperatureC = currentAmbientTemperatureC;
+    lastForcedReport = now;
+  }
+  if(abs(previousCaseTemperatureC - currentCaseTemperatureC) > temp_delta_trigger || now - lastForcedReport > forced_reporting_interval){
+    reportingTemperature = round(currentCaseTemperatureC*10.0)/10.0;
+    pubMQTT(case_temperature_out_topic, String(reportingTemperature));
+    previousCaseTemperatureC = currentCaseTemperatureC;
     lastForcedReport = now;
   }
   if(newState && now - lastMsg > 200){
