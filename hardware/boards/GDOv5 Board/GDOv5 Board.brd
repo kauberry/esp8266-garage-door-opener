@@ -1951,12 +1951,12 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="NAME" x="15.95" y="55.2275" size="0.6096" layer="25"/>
 <attribute name="VALUE" x="18.49" y="55.2275" size="0.6096" layer="25"/>
 </element>
-<element name="C8" library="SparkFun-Capacitors" package="EIA3216" value="10uF" x="26.035" y="71.12" smashed="yes" rot="R180">
+<element name="C8" library="SparkFun-Capacitors" package="EIA3216" value="22uF" x="26.035" y="71.12" smashed="yes" rot="R180">
 <attribute name="PROD_ID" value="CAP-00811" x="26.035" y="71.12" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="24.765" y="73.2315" size="0.6096" layer="25" rot="R180"/>
 <attribute name="VALUE" x="28.4845" y="73.2805" size="0.6096" layer="25" rot="R180"/>
 </element>
-<element name="C9" library="SparkFun-Capacitors" package="EIA3216" value="10uF" x="26.035" y="67.31" smashed="yes" rot="R180">
+<element name="C9" library="SparkFun-Capacitors" package="EIA3216" value="22uF" x="26.035" y="67.31" smashed="yes" rot="R180">
 <attribute name="PROD_ID" value="CAP-00811" x="26.035" y="67.31" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="24.765" y="69.4215" size="0.6096" layer="25" rot="R180"/>
 <attribute name="VALUE" x="28.802" y="69.4705" size="0.6096" layer="25" rot="R180"/>
@@ -2015,6 +2015,10 @@ Please make sure your boards conform to these design rules.</description>
 <element name="R8" library="resistor" package="M3216" value="10k" x="27.94" y="50.8" smashed="yes">
 <attribute name="NAME" x="25.7175" y="52.07" size="0.6096" layer="25"/>
 <attribute name="VALUE" x="28.575" y="52.07" size="0.6096" layer="27"/>
+</element>
+<element name="R11" library="resistor" package="M3216" value="10kΩ" x="25.0825" y="34.925" smashed="yes" rot="R90">
+<attribute name="NAME" x="23.8125" y="32.7025" size="0.6096" layer="25" rot="R90"/>
+<attribute name="VALUE" x="27.6225" y="33.655" size="1.27" layer="27" rot="R90"/>
 </element>
 </elements>
 <signals>
@@ -2099,6 +2103,11 @@ Please make sure your boards conform to these design rules.</description>
 <via x="17.78" y="53.34" extent="1-16" drill="0.3302"/>
 <via x="5.715" y="56.515" extent="1-16" drill="0.3302"/>
 <via x="27.94" y="58.42" extent="1-16" drill="0.3302"/>
+<contactref element="R11" pad="1"/>
+<wire x1="24.28875" y1="34.44875" x2="25.0825" y2="33.655" width="0.1524" layer="1"/>
+<wire x1="16.98625" y1="34.44875" x2="24.28875" y2="34.44875" width="0.1524" layer="1"/>
+<wire x1="16.51" y1="34.925" x2="16.98625" y2="34.44875" width="0.1524" layer="1"/>
+<wire x1="25.0825" y1="33.655" x2="25.0825" y2="33.525" width="0.1524" layer="1"/>
 </signal>
 <signal name="+5V">
 <contactref element="IC2" pad="3"/>
@@ -2284,13 +2293,20 @@ Please make sure your boards conform to these design rules.</description>
 </signal>
 <signal name="ARD14">
 <contactref element="U$1" pad="GPIO14"/>
-<contactref element="S_LED" pad="A"/>
 <wire x1="32.385" y1="63.5" x2="30.48" y2="63.5" width="0.1524" layer="16"/>
-<wire x1="32.385" y1="37.465" x2="32.385" y2="63.5" width="0.1524" layer="1"/>
+<wire x1="32.385" y1="37.465" x2="32.385" y2="41.43375" width="0.1524" layer="1"/>
+<wire x1="32.385" y1="41.43375" x2="32.385" y2="63.5" width="0.1524" layer="1"/>
 <wire x1="31.115" y1="36.195" x2="32.385" y2="37.465" width="0.1524" layer="1"/>
-<wire x1="30.48" y1="36.195" x2="31.115" y2="36.195" width="0.1524" layer="1"/>
 <wire x1="30.48" y1="63.5" x2="29.89" y2="63.5225" width="0.1524" layer="16"/>
 <via x="32.385" y="63.5" extent="1-16" drill="0.3302"/>
+<contactref element="R5" pad="2"/>
+<contactref element="R11" pad="2"/>
+<wire x1="27.94" y1="36.35375" x2="25.0825" y2="36.35375" width="0.1524" layer="1"/>
+<wire x1="25.0825" y1="36.35375" x2="25.0825" y2="36.325" width="0.1524" layer="1"/>
+<wire x1="29.36875" y1="37.7825" x2="27.94" y2="36.35375" width="0.1524" layer="1"/>
+<wire x1="29.36875" y1="41.43375" x2="29.36875" y2="37.7825" width="0.1524" layer="1"/>
+<wire x1="32.385" y1="41.43375" x2="29.36875" y2="41.43375" width="0.1524" layer="1"/>
+<wire x1="27.94" y1="36.35375" x2="27.94" y2="36.325" width="0.1524" layer="1"/>
 </signal>
 <signal name="ENABLE">
 <contactref element="U$1" pad="CH_PD"/>
@@ -2337,8 +2353,6 @@ Please make sure your boards conform to these design rules.</description>
 </signal>
 <signal name="ARD15">
 <contactref element="U$1" pad="GPIO15"/>
-<contactref element="R5" pad="2"/>
-<wire x1="27.94" y1="39.37" x2="27.94" y2="36.325" width="0.1524" layer="1"/>
 <wire x1="22.225" y1="45.085" x2="27.94" y2="39.37" width="0.1524" layer="1"/>
 <wire x1="14.605" y1="45.085" x2="22.225" y2="45.085" width="0.1524" layer="1"/>
 <wire x1="14.605" y1="55.88" x2="14.605" y2="45.085" width="0.1524" layer="16"/>
@@ -2347,6 +2361,12 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="13.97" y1="59.69" x2="15.24" y2="58.42" width="0.1524" layer="16"/>
 <wire x1="13.97" y1="59.69" x2="13.49" y2="59.5225" width="0.1524" layer="16"/>
 <via x="14.605" y="45.085" extent="1-16" drill="0.3302"/>
+<contactref element="S_LED" pad="A"/>
+<wire x1="28.73375" y1="37.94125" x2="30.48" y2="36.195" width="0.1524" layer="16"/>
+<wire x1="28.73375" y1="38.1" x2="28.73375" y2="37.94125" width="0.1524" layer="16"/>
+<wire x1="28.73375" y1="39.37" x2="28.73375" y2="38.1" width="0.1524" layer="1"/>
+<wire x1="27.94" y1="39.37" x2="28.73375" y2="39.37" width="0.1524" layer="1"/>
+<via x="28.73375" y="38.1" extent="1-16" drill="0.3302"/>
 </signal>
 <signal name="ARD0_FLASH">
 <contactref element="U$1" pad="GPIO0"/>
