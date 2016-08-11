@@ -5,14 +5,16 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EEPROM.h>
-#include <FS.h>
+// #include <FS.h>
 #include <string.h>
 #include <ArduinoOTA.h>
+#include <Ticker.h>
 #define wifi_ssid "HomeWiFi"
 #define wifi_password "navi3com"
 #define my_id 1
 #define mqtt_server "192.168.1.7"
-#define HOSTNAME "esp8266-ota-"
+#define HOSTNAME "garage8266-"
+#define OSWATCH_RESET_TIME 30
 
 
 
@@ -56,6 +58,7 @@ String temperature_out_topic;
 String door_triggered_out_topic;
 String light_triggered_out_topic;
 String subscription_in_topic;
+static unsigned long last_loop;
 
 
 int door_trigger_delay_ms = 500;
@@ -63,6 +66,7 @@ int door_trigger_delay_ms = 500;
 // OneWire ds(D6);
 OneWire ds(TEMP_PORT);
 DallasTemperature DS18B20(&ds);
+Ticker tickerOSWatch;
 
 void callback_handler(char* topic, byte* payload, unsigned int length);
 
@@ -82,8 +86,9 @@ static long forced_reporting_interval = 300000;
 
 int up_value;
 int dn_value;
+int test_up;
+int test_dn;
 int is_up;
-int loop_status = -2;
 int entry_state;
 
 
@@ -100,63 +105,74 @@ float currentAmbientTemperatureC;
 float currentCaseTemperatureC;
 int door_trigger();
 
-bool loadConfig(String *ssid, String *pass)
-{
-  // open file for reading.
-  File configFile = SPIFFS.open("/cl_conf.txt", "r");
-  if (!configFile)
-  {
-    Serial.println("Failed to open cl_conf.txt.");
+// bool loadConfig(String *ssid, String *pass)
+// {
+//   // open file for reading.
+//   File configFile = SPIFFS.open("/cl_conf.txt", "r");
+//   if (!configFile)
+//   {
+//     Serial.println("Failed to open cl_conf.txt.");
+//
+//     return false;
+//   }
+//
+//   // Read content from config file.
+//   String content = configFile.readString();
+//   configFile.close();
+//
+//   content.trim();
+//
+//   // Check if ther is a second line available.
+//   int8_t pos = content.indexOf("\r\n");
+//   uint8_t le = 2;
+//   // check for linux and mac line ending.
+//   if (pos == -1)
+//   {
+//     le = 1;
+//     pos = content.indexOf("\n");
+//     if (pos == -1)
+//     {
+//       pos = content.indexOf("\r");
+//     }
+//   }
+//
+//   // If there is no second line: Some information is missing.
+//   if (pos == -1)
+//   {
+//     Serial.println("Invalid content.");
+//     Serial.println(content);
+//
+//     return false;
+//   }
+//
+//   // Store SSID and PSK into string vars.
+//   *ssid = content.substring(0, pos);
+//   *pass = content.substring(pos + le);
+//
+//   ssid->trim();
+//   pass->trim();
+//
+// #ifdef SERIAL_VERBOSE
+//   Serial.println("----- file content -----");
+//   Serial.println(content);
+//   Serial.println("----- file content -----");
+//   Serial.println("ssid: " + *ssid);
+//   Serial.println("psk:  " + *pass);
+// #endif
+//
+//   return true;
+// } // loadConfig
 
-    return false;
-  }
 
-  // Read content from config file.
-  String content = configFile.readString();
-  configFile.close();
-
-  content.trim();
-
-  // Check if ther is a second line available.
-  int8_t pos = content.indexOf("\r\n");
-  uint8_t le = 2;
-  // check for linux and mac line ending.
-  if (pos == -1)
-  {
-    le = 1;
-    pos = content.indexOf("\n");
-    if (pos == -1)
-    {
-      pos = content.indexOf("\r");
+void ICACHE_RAM_ATTR osWatch(void) {
+    unsigned long t = millis();
+    unsigned long last_run = abs(t - last_loop);
+    if(last_run >= (OSWATCH_RESET_TIME * 1000)) {
+      // save the hit here to eeprom or to rtc memory if needed
+        ESP.restart();  // normal reboot
+        //ESP.reset();  // hard reset
     }
-  }
-
-  // If there is no second line: Some information is missing.
-  if (pos == -1)
-  {
-    Serial.println("Invalid content.");
-    Serial.println(content);
-
-    return false;
-  }
-
-  // Store SSID and PSK into string vars.
-  *ssid = content.substring(0, pos);
-  *pass = content.substring(pos + le);
-
-  ssid->trim();
-  pass->trim();
-
-#ifdef SERIAL_VERBOSE
-  Serial.println("----- file content -----");
-  Serial.println(content);
-  Serial.println("----- file content -----");
-  Serial.println("ssid: " + *ssid);
-  Serial.println("psk:  " + *pass);
-#endif
-
-  return true;
-} // loadConfig
+}
 
 
 /**
@@ -165,25 +181,25 @@ bool loadConfig(String *ssid, String *pass)
  * @param pass PSK as string pointer,
  * @return True or False.
  */
-bool saveConfig(String *ssid, String *pass)
-{
-  // Open config file for writing.
-  File configFile = SPIFFS.open("/cl_conf.txt", "w");
-  if (!configFile)
-  {
-    Serial.println("Failed to open cl_conf.txt for writing");
-
-    return false;
-  }
-
-  // Save SSID and PSK.
-  configFile.println(*ssid);
-  configFile.println(*pass);
-
-  configFile.close();
-
-  return true;
-} // saveConfig
+// bool saveConfig(String *ssid, String *pass)
+// {
+//   // Open config file for writing.
+//   File configFile = SPIFFS.open("/cl_conf.txt", "w");
+//   if (!configFile)
+//   {
+//     Serial.println("Failed to open cl_conf.txt for writing");
+//
+//     return false;
+//   }
+//
+//   // Save SSID and PSK.
+//   configFile.println(*ssid);
+//   configFile.println(*pass);
+//
+//   configFile.close();
+//
+//   return true;
+// } // saveConfig
 
 bool setStatus(){
   up_value = digitalRead(UP_SENSE_PIN);
@@ -194,20 +210,32 @@ bool setStatus(){
   digitalWrite(UP_IND_PIN, up_value);
   digitalWrite(DN_IND_PIN, dn_value);
   if(current_status != is_up){
-    status_changed = true;
+    delay(250);
+    test_up = digitalRead(UP_SENSE_PIN);
+    test_dn = digitalRead(DN_SENSE_PIN);
+    test_status = test_up - test_dn;
+    if(test_status == is_up){
+      status_changed = false;
+    else if(test_status != is_up && test_status == current_status){
+      //still the same readings after a short delay
+      status_changed = true;
+      is_up = test_status;
+    }
   }
-  is_up = current_status;
   return status_changed;
 }
 
 void setup_wifi() {
+  if(WiFi.status() == WL_CONNECTED){
+    return;
+  }
   String station_ssid = "";
   String station_psk = "";
   // ssid = wifi_ssid;
   // password = wifi_password;
   delay(500);
   String hostname(HOSTNAME);
-  hostname += String(ESP.getChipId(),HEX);
+  hostname += my_id;
   WiFi.hostname(hostname);
   if(DEBUG_MODE){
     Serial.println("\r\n");
@@ -284,6 +312,30 @@ void setup_wifi() {
 
   // Start OTA server.
   ArduinoOTA.setHostname((const char *)hostname.c_str());
+  ArduinoOTA.onStart([]() {
+    client.disconnect();
+    Serial.println("Start");
+    Serial.print("Sketchsize: ");
+    Serial.print(ESP.getSketchSize());
+    Serial.print(" / Freespace: ");
+    Serial.println(ESP.getFreeSketchSpace());
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+    reconnect();
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+  });
+
   ArduinoOTA.begin();
 
 
@@ -473,7 +525,7 @@ void identify_request(){
 
 
 String evalIsUp(){
-  String myState = "indeterminate";
+  String myState;
   switch(is_up){
     case 1:
       // myState = "open";
@@ -501,12 +553,12 @@ String evalIsUp(){
   return myState;
 }
 
+long last_read = millis();
+
 void setup() {
   Serial.begin(115200);
   // delay(500);
   // newState = setStatus();
-  entry_state = is_up;
-  currentState = evalIsUp();
   currentAmbientTemperatureC = getTemperature(0);
   currentCaseTemperatureC = getTemperature(1);
 
@@ -534,20 +586,57 @@ void setup() {
   previousAmbientTemperatureC = 4000.0;
   previousCaseTemperatureC = 4000.0;
 
-  signalStartup(250);
-  getTempDevices();
+  last_loop = millis();
+  tickerOSWatch.attach_ms(((OSWATCH_RESET_TIME / 3) * 1000), osWatch);
 
+  entry_state = setStatus();
+  is_up = entry_state;
+  currentState = evalIsUp();
+
+  signalStartup(250);
+  // getTempDevices();
+  Serial.println(ESP.getFreeSketchSpace());
+  lastRead = millis()
   // newState = setStatus();
 }
 
 float reportingTemperature;
+int i = 0;
+long now;
+
 void loop(){
+  last_loop = millis();
+  i = 0;
+  while((WiFi.status() != WL_CONNECTED) && i < 40){
+    delay(1000);
+    setup_wifi();
+    i++;
+  }
+  if(WiFi.status() != WL_CONNECTED && i >= 40){
+    ESP.restart();
+  }
   if(!client.connected()){
     reconnect();
   }
-  newState = setStatus();
-  motion_direction = is_up - entry_state;
-  long now = millis();
+
+  if(abs(millis() - last_read) >= 100){
+    newState = setStatus();
+    motion_direction = is_up - entry_state;
+    if(newState){
+      entry_state = is_up;
+      lastMsg = now;
+      currentState = evalIsUp();
+      if(DEBUG_MODE){
+        Serial.print("New State => ");
+        Serial.println(currentState);
+      }
+      // pubMQTT(constructTopic(my_id,status_topic),currentState);
+      pubMQTT(status_out_topic, currentState);
+    }
+    last_read = millis();
+  }
+
+  now = millis();
   if(now - lastTempMsg > 2000){
     currentAmbientTemperatureC = getTemperature(0);
     currentCaseTemperatureC = getTemperature(1);
@@ -559,24 +648,13 @@ void loop(){
     previousAmbientTemperatureC = currentAmbientTemperatureC;
     lastForcedReport = now;
   }
-  if(abs(previousCaseTemperatureC - currentCaseTemperatureC) > temp_delta_trigger || now - lastForcedReport > forced_reporting_interval){
+  if(abs(previousCaseTemperatureC - currentCaseTemperatureC) > temp_delta_trigger){
     reportingTemperature = round(currentCaseTemperatureC*10.0)/10.0;
     pubMQTT(case_temperature_out_topic, String(reportingTemperature));
     previousCaseTemperatureC = currentCaseTemperatureC;
     lastForcedReport = now;
   }
-  if(newState && now - lastMsg > 200){
-    entry_state = is_up;
-    lastMsg = now;
-    currentState = evalIsUp();
-    if(DEBUG_MODE){
-      Serial.print("New State => ");
-      Serial.println(currentState);
-    }
-    // pubMQTT(constructTopic(my_id,status_topic),currentState);
-    pubMQTT(status_out_topic, currentState);
-  }
-  client.loop();
   ArduinoOTA.handle();
-  yield();
+  client.loop();
+  //yield();
 }
