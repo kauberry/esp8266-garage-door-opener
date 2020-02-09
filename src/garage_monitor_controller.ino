@@ -44,6 +44,7 @@ String temperature_topic = "temperature";
 String door_control_topic = "door_trigger";
 String light_control_topic = "light_trigger";
 String status_request_topic = "status";
+String full_status_request_topic = "full_status";
 String case_temp_request_topic = "case_temperature";
 String ambient_temp_request_topic = "ambient_temperature";
 String identify_topic = "identify";
@@ -52,6 +53,7 @@ String out_topic_prefix = "garage/out/";
 String in_topic_prefix = "garage/in/";
 
 String status_out_topic;
+String full_status_out_topic;
 String case_temperature_out_topic;
 String ambient_temperature_out_topic;
 String temperature_out_topic;
@@ -204,6 +206,9 @@ void ICACHE_RAM_ATTR osWatch(void) {
 bool setStatus(){
   up_value = digitalRead(UP_SENSE_PIN);
   dn_value = digitalRead(DN_SENSE_PIN);
+  int test_up;
+  int test_dn;
+  int test_status;
   int current_status;
   bool status_changed = false;
   current_status = up_value - dn_value;
@@ -216,7 +221,7 @@ bool setStatus(){
     test_status = test_up - test_dn;
     if(test_status == is_up){
       status_changed = false;
-    else if(test_status != is_up && test_status == current_status){
+    }else if(test_status != is_up && test_status == current_status){
       //still the same readings after a short delay
       status_changed = true;
       is_up = test_status;
@@ -567,6 +572,7 @@ void setup() {
   case_temperature_out_topic = out_topic_prefix + String(my_id) + "/" + case_temp_request_topic;
   ambient_temperature_out_topic = out_topic_prefix + String(my_id) + "/" + ambient_temp_request_topic;
   status_out_topic = out_topic_prefix + String(my_id) + "/" + status_request_topic;
+  full_status_out_topic = out_topic_prefix + String(my_id) + "/" + full_status_request_topic;
   subscription_in_topic = in_topic_prefix + String(my_id) + "/#";
 
   setup_wifi();
@@ -596,7 +602,7 @@ void setup() {
   signalStartup(250);
   // getTempDevices();
   Serial.println(ESP.getFreeSketchSpace());
-  lastRead = millis()
+  // lastRead = millis()
   // newState = setStatus();
 }
 
@@ -631,7 +637,10 @@ void loop(){
         Serial.println(currentState);
       }
       // pubMQTT(constructTopic(my_id,status_topic),currentState);
-      pubMQTT(status_out_topic, currentState);
+      pubMQTT(full_status_out_topic, currentState);
+      if(currentState.toInt() <= 1){
+        pubMQTT(status_out_topic, currentState);
+      }
     }
     last_read = millis();
   }
